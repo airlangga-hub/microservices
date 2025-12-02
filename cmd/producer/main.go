@@ -11,7 +11,7 @@ import (
 
 func main() {
 	
-	conn, err := internal.ConnectRabbit("angga", "Thebut12!", "localhost:5672", "customers")
+	conn, err := internal.ConnectRabbit("angga", , "localhost:5672", "customers")
 	
 	if err != nil {
 		panic(err)
