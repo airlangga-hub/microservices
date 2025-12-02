@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"github.com/airlangga-hub/microservices/internal"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
@@ -38,6 +40,25 @@ func main() {
 	}
 	
 	if err := rabbitClient.CreateBinding("customers_test", "customers.*", "customer_event"); err != nil {
+		panic(err)
+	}
+	
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	
+	if err := rabbitClient.Send(ctx, "customer_event", "customers.created.us", amqp091.Publishing{
+		ContentType: "text/plain",
+		DeliveryMode: amqp091.Persistent,
+		Body: []byte(`A cool persistent message between services`),
+	}); err != nil {
+		panic(err)
+	}
+	
+	if err := rabbitClient.Send(ctx, "customer_event", "customers.test", amqp091.Publishing{
+		ContentType: "text/plain",
+		DeliveryMode: amqp091.Transient,
+		Body: []byte(`A cool transient message between services`),
+	}); err != nil {
 		panic(err)
 	}
 	
