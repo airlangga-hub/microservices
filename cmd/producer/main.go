@@ -3,15 +3,24 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/airlangga-hub/microservices/internal"
+	"github.com/joho/godotenv"
 	"github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
 	
-	conn, err := internal.ConnectRabbit("angga", , "localhost:5672", "customers")
+	godotenv.Load()
+	
+	password := os.Getenv("PASSWORD")
+	username := os.Getenv("USERNAME")
+	host := os.Getenv("HOST")
+	vhost := os.Getenv("VHOST")
+	
+	conn, err := internal.ConnectRabbit(username, password, host, vhost)
 	
 	if err != nil {
 		panic(err)

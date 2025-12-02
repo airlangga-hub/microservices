@@ -55,5 +55,5 @@ func (r RabbitClient) Send(ctx context.Context, exchange, key string, options am
 }
 
 func (r RabbitClient) Consume(queue, consumer string, autoAck bool) (<-chan amqp.Delivery, error) {
-	return r.chann.Consume(queue, consumer, autoAck, )
+	return r.chann.Consume(queue, consumer, autoAck, false, false, false, nil)
 }
