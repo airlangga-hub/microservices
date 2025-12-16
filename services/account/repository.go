@@ -32,7 +32,7 @@ func NewRepository(dsn string) (Repository, error) {
 }
 
 func (r *repository) CreateAccount(ctx context.Context, a domain.Account) error {
-	if err := r.db.Create(a).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(a).Error; err != nil {
 		log.Println("ERROR: accounts repo --> CreateAccount: ", err)
 		return errors.New("error creating account")
 	}
@@ -43,7 +43,7 @@ func (r *repository) CreateAccount(ctx context.Context, a domain.Account) error 
 func (r *repository) GetAccountByID(ctx context.Context, id uint) (domain.Account, error) {
 	account := domain.Account{}
 	
-	if err := r.db.First(&account, "id=?", id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&account, "id=?", id).Error; err != nil {
 		log.Println("ERROR: accounts repo --> GetAccountByID: ", err)
 		return domain.Account{}, errors.New("account not found")
 	}
@@ -54,7 +54,7 @@ func (r *repository) GetAccountByID(ctx context.Context, id uint) (domain.Accoun
 func (r *repository) ListAccounts(ctx context.Context, skip uint, take uint) ([]*domain.Account, error) {
 	accounts := []*domain.Account{}
 	
-	if err := r.db.Find(&accounts).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&accounts).Error; err != nil {
 		log.Println("ERROR: accounts repo --> ListAccounts: ", err)
 		return nil, errors.New("no accounts found")
 	}
