@@ -1,0 +1,7 @@
+services:
+  account:
+  catalog:
+  order:
+  account_db:
+  catalog_db:
+  order_db:
