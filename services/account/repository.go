@@ -14,7 +14,7 @@ import (
 type Repository interface {
 	CreateAccount(ctx context.Context, a domain.Account) error
 	GetAccountByID(ctx context.Context, id uint) (domain.Account, error)
-	ListAccounts(ctx context.Context, skip uint, take uint) ([]*domain.Account, error)
+	ListAccounts(ctx context.Context, offset int, limit int) ([]*domain.Account, error)
 }
 
 type repository struct {
@@ -51,10 +51,10 @@ func (r *repository) GetAccountByID(ctx context.Context, id uint) (domain.Accoun
 	return account, nil
 }
 
-func (r *repository) ListAccounts(ctx context.Context, skip uint, take uint) ([]*domain.Account, error) {
+func (r *repository) ListAccounts(ctx context.Context, offset int, limit int) ([]*domain.Account, error) {
 	accounts := []*domain.Account{}
 	
-	if err := r.db.WithContext(ctx).Find(&accounts).Error; err != nil {
+	if err := r.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&accounts).Error; err != nil {
 		log.Println("ERROR: accounts repo --> ListAccounts: ", err)
 		return nil, errors.New("no accounts found")
 	}
