@@ -12,7 +12,7 @@ type Account struct {
 type Service interface {
 	PostAccount(ctx context.Context, name string) error
 	GetAccount(ctx context.Context, id int32) (Account, error)
-	GetAccounts(ctx context.Context, offset, limit int) ([]Account, error)
+	GetAccounts(ctx context.Context, offset, limit int32) ([]Account, error)
 }
 
 type service struct {
@@ -31,7 +31,7 @@ func (s *service) GetAccount(ctx context.Context, id int32) (Account, error) {
 	return s.repository.GetAccountByID(ctx, id)
 }
 
-func (s *service) GetAccounts(ctx context.Context, offset, limit int) ([]Account, error) {
+func (s *service) GetAccounts(ctx context.Context, offset, limit int32) ([]Account, error) {
 	if limit > 100 || (offset == 0 && limit == 0) {
 		limit = 100
 	}

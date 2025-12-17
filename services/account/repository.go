@@ -13,7 +13,7 @@ type Repository interface {
 	Close() error
 	CreateAccount(ctx context.Context, a Account) error
 	GetAccountByID(ctx context.Context, id int32) (Account, error)
-	ListAccounts(ctx context.Context, offset int, limit int) ([]Account, error)
+	ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error)
 }
 
 type repository struct {
@@ -54,11 +54,9 @@ func (r *repository) CreateAccount(ctx context.Context, a Account) error {
 }
 
 func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, error) {
-	row := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id=$1", id)
-
 	account := Account{}
 
-	if err := row.Scan(&account.ID, &account.Name); err != nil {
+	if err := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id=$1", id).Scan(&account.ID, &account.Name); err != nil {
 		log.Println("ERROR: account repo GetAccountByID: ", err)
 		return Account{}, errors.New("error getting account by id")
 	}
@@ -66,7 +64,7 @@ func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, err
 	return account, nil
 }
 
-func (r *repository) ListAccounts(ctx context.Context, offset int, limit int) ([]Account, error) {
+func (r *repository) ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		"SELECT id, name FROM accounts ORDER BY id DESC OFFSET $1 LIMIT $2",
