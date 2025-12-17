@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	ID   uint   `json:"id"`
+	ID   int32   `json:"id"`
 	Name string `json:"name"`
 }
 
