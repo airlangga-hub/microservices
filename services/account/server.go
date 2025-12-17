@@ -12,7 +12,7 @@ import (
 
 type Server struct {
 	pb.UnimplementedAccountServiceServer
-	svc Service
+	Svc Service
 }
 
 func ListenGrpc(service Service, port int) error {
@@ -23,17 +23,13 @@ func ListenGrpc(service Service, port int) error {
 
 	s := grpc.NewServer()
 
-	pb.RegisterAccountServiceServer(s, &Server{svc: service})
+	pb.RegisterAccountServiceServer(s, &Server{Svc: service})
 
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("ERROR: failed to serve gRPC: %v", err)
-	}
-
-	return nil
+	return s.Serve(lis)
 }
 
 func (s *Server) PostAccount(ctx context.Context, r *pb.PostAccountRequest) (*pb.PostAccountResponse, error) {
-	account, err := s.svc.PostAccount(ctx, r.Name)
+	account, err := s.Svc.PostAccount(ctx, r.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +38,7 @@ func (s *Server) PostAccount(ctx context.Context, r *pb.PostAccountRequest) (*pb
 }
 
 func (s *Server) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.GetAccountResponse, error) {
-	account, err := s.svc.GetAccount(ctx, r.Id)
+	account, err := s.Svc.GetAccount(ctx, r.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +47,7 @@ func (s *Server) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.G
 }
 
 func (s *Server) GetAccounts(ctx context.Context, r *pb.GetAccountsRequest) (*pb.GetAccountsResponse, error) {
-	accounts, err := s.svc.GetAccounts(ctx, r.Offset, r.Limit)
+	accounts, err := s.Svc.GetAccounts(ctx, r.Offset, r.Limit)
 	if err != nil {
 		return nil, err
 	}
