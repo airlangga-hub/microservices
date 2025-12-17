@@ -10,7 +10,7 @@ type Account struct {
 }
 
 type Service interface {
-	PostAccount(ctx context.Context, name string) error
+	PostAccount(ctx context.Context, name string) (Account, error)
 	GetAccount(ctx context.Context, id int32) (Account, error)
 	GetAccounts(ctx context.Context, offset, limit int32) ([]Account, error)
 }
@@ -23,7 +23,7 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s *service) PostAccount(ctx context.Context, name string) error {
+func (s *service) PostAccount(ctx context.Context, name string) (Account, error) {
 	return s.repository.CreateAccount(ctx, Account{Name: name})
 }
 

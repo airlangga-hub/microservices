@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	Close() error
-	CreateAccount(ctx context.Context, a Account) error
+	CreateAccount(ctx context.Context, a Account) (Account, error)
 	GetAccountByID(ctx context.Context, id int32) (Account, error)
 	ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error)
 }
@@ -43,14 +43,15 @@ func (r *repository) Close() error {
 	return nil
 }
 
-func (r *repository) CreateAccount(ctx context.Context, a Account) error {
-	_, err := r.db.ExecContext(ctx, "INSERT INTO accounts(name) VALUES($1)", a.Name)
-	if err != nil {
+func (r *repository) CreateAccount(ctx context.Context, a Account) (Account, error) {
+	account := Account{}
+	
+	if err := r.db.QueryRowContext(ctx, "INSERT INTO accounts(name) VALUES($1) RETURNING id, name", a.Name).Scan(&account.ID, &account.Name); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
-		return errors.New("error creating account")
+		return Account{}, errors.New("error creating account")
 	}
 
-	return nil
+	return account, nil
 }
 
 func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, error) {
