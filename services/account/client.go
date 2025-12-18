@@ -11,27 +11,27 @@ import (
 )
 
 type Client struct {
-	GrpcConn   *grpc.ClientConn
-	GrpcClient pb.AccountServiceClient
+	Conn    *grpc.ClientConn
+	Service pb.AccountServiceClient
 }
 
 func NewClient(url string) (*Client, error) {
 	port := os.Getenv("PORT")
 	target := "localhost" + port
-	
+
 	opts := []grpc.DialOption{}
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	
-	grpcConn, err := grpc.NewClient(target, opts...)
+
+	conn, err := grpc.NewClient(target, opts...)
 	if err != nil {
 		log.Fatalf("ERROR: account client NewClient: ", err)
 		return nil, errors.New("error creating grpc client connection")
 	}
-	
-	grpcClient := pb.NewAccountServiceClient(grpcConn)
-	
+
+	service := pb.NewAccountServiceClient(conn)
+
 	return &Client{
-		GrpcConn: grpcConn,
-		GrpcClient: grpcClient,
+		Conn:    conn,
+		Service: service,
 	}, nil
 }
