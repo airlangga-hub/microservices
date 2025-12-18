@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"errors"
 	"log"
 	"os"
@@ -34,4 +35,14 @@ func NewClient(url string) (*Client, error) {
 		Conn:    conn,
 		Service: service,
 	}, nil
+}
+
+func (c *Client) PostAccount(ctx context.Context, name string) (*pb.Account, error) {
+	res, err := c.Service.PostAccount(ctx, &pb.PostAccountRequest{Name: name})
+	if err != nil {
+		log.Println("ERROR: account client PostAccount: ", err)
+		return nil, errors.New("error client post account")
+	}
+	
+	return res.Account, nil
 }
