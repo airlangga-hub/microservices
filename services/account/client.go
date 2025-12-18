@@ -56,3 +56,13 @@ func (c *Client) GetAccount(ctx context.Context, id int32) (*pb.Account, error) 
 	
 	return res.Account, nil
 }
+
+func (c *Client) GetAccounts(ctx context.Context, offset, limit int32) ([]*pb.Account, error) {
+	res, err := c.Service.GetAccounts(ctx, &pb.GetAccountsRequest{Offset: offset, Limit: limit})
+	if err != nil {
+		log.Println("ERROR: account client GetAccounts: ", err)
+		return nil, errors.New("error client get accounts")
+	}
+	
+	return res.Accounts, nil
+}
