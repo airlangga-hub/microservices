@@ -7,6 +7,7 @@ import (
 
 func main() {
 	dbUrl := os.Getenv("DB_URL")
+	port := os.Getenv("PORT")
 	
 	repository, err := NewRepository(dbUrl)
 	if err != nil {
@@ -16,5 +17,5 @@ func main() {
 	
 	service := NewService(repository)
 	
-	log.Fatal(ListenGrpc(service, 9090))
+	log.Fatal(ListenGrpc(service, port))
 }

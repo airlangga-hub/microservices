@@ -15,8 +15,8 @@ type Server struct {
 	Svc Service
 }
 
-func ListenGrpc(service Service, port int) error {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+func ListenGrpc(service Service, port string) error {
+	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("ERROR: account server ListenGrpc: %v", err)
 	}
