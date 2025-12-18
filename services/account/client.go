@@ -43,6 +43,16 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*pb.Account, err
 		log.Println("ERROR: account client PostAccount: ", err)
 		return nil, errors.New("error client post account")
 	}
+
+	return res.Account, nil
+}
+
+func (c *Client) GetAccount(ctx context.Context, id int32) (*pb.Account, error) {
+	res, err := c.Service.GetAccount(ctx, &pb.GetAccountRequest{Id: id})
+	if err != nil {
+		log.Println("ERROR: account client GetAccount: ", err)
+		return nil, errors.New("error client get account")
+	}
 	
 	return res.Account, nil
 }
