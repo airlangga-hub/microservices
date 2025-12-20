@@ -13,7 +13,7 @@ import (
 )
 
 type Repository interface {
-	CreateProduct(ctx context.Context, p productDocument) error
+	CreateProduct(ctx context.Context, p productDocument) (Product, error)
 	GetProductByID(ctx context.Context, id string) (Product, error)
 	ListProducts(ctx context.Context, offset, limit int32) ([]Product, error)
 	ListProductsWithIDs(ctx context.Context, ids []string) ([]Product, error)
@@ -61,11 +61,11 @@ func NewRepository() (Repository, error) {
 	return &repository{client}, nil
 }
 
-func (r *repository) CreateProduct(ctx context.Context, p productDocument) error {
+func (r *repository) CreateProduct(ctx context.Context, p productDocument) (Product, error) {
 	productDoc, err := json.Marshal(p)
 	if err != nil {
 		log.Println("ERROR: catalog repo CreateProduct: ", err)
-		return errors.New("error marshaling product")
+		return Product{}, errors.New("error marshaling product")
 	}
 
 	req := esapi.IndexRequest{
@@ -77,28 +77,29 @@ func (r *repository) CreateProduct(ctx context.Context, p productDocument) error
 	res, err := req.Do(ctx, r.client)
 	if err != nil {
 		log.Println("ERROR: catalog repo CreateProduct: ", err)
-		return errors.New("error creating product in elastic search")
+		return Product{}, errors.New("error creating product in elastic search")
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
 		log.Printf("ERROR: catalog repo CreateProduct status=%d body=%s", res.StatusCode, body)
-		return errors.New("error creating product in elastic search")
+		return Product{}, errors.New("error creating product in elastic search")
 	}
 
 	var response struct {
-		ID string `json:"_id"`
+		ID     string  `json:"_id"`
+		Source Product `json:"_source"`
 	}
 
 	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
 		log.Println("ERROR: catalog repo CreateProduct: decode ID error", err)
-		return errors.New("error decoding generated ID")
+		return Product{}, errors.New("error decoding generated ID")
 	}
 
-	log.Println("CREATED: created product with id: ", response.ID)
+	response.Source.ID = response.ID
 
-	return nil
+	return response.Source, nil
 }
 
 func (r *repository) GetProductByID(ctx context.Context, id string) (Product, error) {
