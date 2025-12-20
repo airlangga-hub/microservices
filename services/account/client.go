@@ -16,7 +16,7 @@ type Client struct {
 	Service pb.AccountServiceClient
 }
 
-func NewClient(url string) (*Client, error) {
+func NewClient() (*Client, error) {
 	port := os.Getenv("PORT")
 	target := "localhost" + port
 
