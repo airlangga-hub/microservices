@@ -13,7 +13,7 @@ import (
 )
 
 type Repository interface {
-	CreateProduct(ctx context.Context, p Product) error
+	CreateProduct(ctx context.Context, p productDocument) error
 	GetProductByID(ctx context.Context, id string) (Product, error)
 	ListProducts(ctx context.Context, offset, limit int32) ([]Product, error)
 	ListProductsWithIDs(ctx context.Context, ids []string) ([]Product, error)
@@ -31,11 +31,18 @@ type Product struct {
 	Price       float32 `json:"price"`
 }
 
+type productDocument struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float32 `json:"price"`
+}
+
 const ESIndex = "catalog"
 
 type ESresponse struct {
 	Hits struct {
 		Hits []struct {
+			ID     string  `json:"_id"`
 			Source Product `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
@@ -54,8 +61,8 @@ func NewRepository() (Repository, error) {
 	return &repository{client}, nil
 }
 
-func (r *repository) CreateProduct(ctx context.Context, p Product) error {
-	product, err := json.Marshal(p)
+func (r *repository) CreateProduct(ctx context.Context, p productDocument) error {
+	productDoc, err := json.Marshal(p)
 	if err != nil {
 		log.Println("ERROR: catalog repo CreateProduct: ", err)
 		return errors.New("error marshaling product")
@@ -63,7 +70,7 @@ func (r *repository) CreateProduct(ctx context.Context, p Product) error {
 
 	req := esapi.IndexRequest{
 		Index:   ESIndex,
-		Body:    bytes.NewReader(product),
+		Body:    bytes.NewReader(productDoc),
 		Refresh: "true",
 	}
 
@@ -122,6 +129,8 @@ func (r *repository) GetProductByID(ctx context.Context, id string) (Product, er
 		return Product{}, errors.New("error decoding get product by id response")
 	}
 
+	response.Source.ID = id
+
 	return response.Source, nil
 }
 
@@ -168,6 +177,7 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 	products := []Product{}
 
 	for _, hit := range response.Hits.Hits {
+		hit.Source.ID = hit.ID
 		products = append(products, hit.Source)
 	}
 
@@ -221,6 +231,7 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 	products := []Product{}
 
 	for _, hit := range response.Hits.Hits {
+		hit.Source.ID = hit.ID
 		products = append(products, hit.Source)
 	}
 
@@ -273,6 +284,7 @@ func (r *repository) SearchProducts(ctx context.Context, query string, offset, l
 	products := []Product{}
 
 	for _, hit := range response.Hits.Hits {
+		hit.Source.ID = hit.ID
 		products = append(products, hit.Source)
 	}
 
