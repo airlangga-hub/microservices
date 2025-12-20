@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 

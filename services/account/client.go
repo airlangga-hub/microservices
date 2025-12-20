@@ -25,7 +25,7 @@ func NewClient(url string) (*Client, error) {
 
 	conn, err := grpc.NewClient(target, opts...)
 	if err != nil {
-		log.Fatalf("ERROR: account client NewClient: ", err)
+		log.Fatalf("ERROR: account client NewClient: %v", err)
 		return nil, errors.New("error creating grpc client connection")
 	}
 
