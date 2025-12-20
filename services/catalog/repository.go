@@ -34,6 +34,14 @@ type Product struct {
 
 const ESIndex = "catalog"
 
+type ESResult struct {
+	Hits struct {
+		Hits []struct {
+			Source Product `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
+
 func NewRepository() (Repository, error) {
 	client, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -48,7 +56,7 @@ func NewRepository() (Repository, error) {
 }
 
 func (r *repository) CreateProduct(ctx context.Context, p Product) error {
-	data, err := json.Marshal(p)
+	product, err := json.Marshal(p)
 	if err != nil {
 		log.Println("ERROR: catalog repo CreateProduct: ", err)
 		return errors.New("error marshaling product")
@@ -57,7 +65,7 @@ func (r *repository) CreateProduct(ctx context.Context, p Product) error {
 	req := esapi.IndexRequest{
 		Index:      ESIndex,
 		DocumentID: strconv.Itoa(int(p.ID)),
-		Body:       bytes.NewReader(data),
+		Body:       bytes.NewReader(product),
 		Refresh:    "true",
 	}
 
@@ -117,7 +125,7 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 		},
 	}
 
-	q, err := json.Marshal(query)
+	esQuery, err := json.Marshal(query)
 	if err != nil {
 		log.Println("ERROR: catalog repo ListProducts: ", err)
 		return nil, errors.New("error marshaling query for ListProducts")
@@ -125,7 +133,7 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 
 	req := esapi.SearchRequest{
 		Index: []string{ESIndex},
-		Body:  bytes.NewReader(q),
+		Body:  bytes.NewReader(esQuery),
 	}
 
 	res, err := req.Do(ctx, r.client)
@@ -141,13 +149,7 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 		return nil, errors.New("error listing products")
 	}
 
-	var result struct {
-		Hits struct {
-			Hits []struct {
-				Source Product `json:"_source"`
-			} `json:"hits"`
-		} `json:"hits"`
-	}
+	var result ESResult
 
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
 		log.Println("ERROR: catalog repo ListProducts: ", err)
@@ -176,7 +178,7 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 		},
 	}
 
-	q, err := json.Marshal(query)
+	esQuery, err := json.Marshal(query)
 	if err != nil {
 		log.Println("ERROR: catalog repo ListProductsWithIDs: ", err)
 		return nil, errors.New("error marshaling query for ListProductsWithIDs")
@@ -184,7 +186,7 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 
 	req := esapi.SearchRequest{
 		Index: []string{ESIndex},
-		Body:  bytes.NewReader(q),
+		Body:  bytes.NewReader(esQuery),
 	}
 
 	res, err := req.Do(ctx, r.client)
@@ -200,26 +202,70 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 		return nil, errors.New("error listing products by IDs")
 	}
 
-	var result struct {
-		Hits struct {
-			Hits []struct {
-				Source Product `json:"_source"`
-			} `json:"hits"`
-		} `json:"hits"`
-	}
+	var result ESResult
 
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
 		log.Println("ERROR: catalog repo ListProductsWithIDs: ", err)
 		return nil, errors.New("error decoding products by IDs response")
 	}
-	
+
 	products := []Product{}
-	
+
 	for _, hit := range result.Hits.Hits {
 		products = append(products, hit.Source)
 	}
-	
+
 	return products, nil
 }
 
-func (r *repository) SearchProducts(ctx context.Context, query string, offset, limit int32) ([]Product, error)
+func (r *repository) SearchProducts(ctx context.Context, query string, offset, limit int32) ([]Product, error) {
+	q := map[string]any{
+		"query": map[string]any{
+			"multi_match": map[string]any{
+				"query":  query,
+				"fields": []string{"name^2", "description"},
+			},
+		},
+		"from": offset,
+		"size": limit,
+	}
+
+	esQuery, err := json.Marshal(q)
+	if err != nil {
+		log.Println("ERROR: catalog repo SearchProducts: ", err)
+		return nil, errors.New("error marshaling search products query")
+	}
+
+	req := esapi.SearchRequest{
+		Index: []string{ESIndex},
+		Body:  bytes.NewReader(esQuery),
+	}
+
+	res, err := req.Do(ctx, r.client)
+	if err != nil {
+		log.Println("ERROR: catalog repo SearchProducts: ", err)
+		return nil, errors.New("error searching products")
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		body, _ := io.ReadAll(res.Body)
+		log.Printf("ERROR: catalog repo SearchProducts: status=%d, body=%s", res.StatusCode, body)
+		return nil, errors.New("elasticsearch error searching products")
+	}
+
+	var result ESResult
+
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		log.Println("ERROR: catalog repo SearchProducts: decode error", err)
+		return nil, errors.New("error decoding search results")
+	}
+
+	products := []Product{}
+
+	for _, hit := range result.Hits.Hits {
+		products = append(products, hit.Source)
+	}
+
+	return products, nil
+}
