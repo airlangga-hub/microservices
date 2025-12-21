@@ -22,7 +22,7 @@ func NewClient() (*Client, error) {
 	opts := []grpc.DialOption{}
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	conn, err := grpc.NewClient(target)
+	conn, err := grpc.NewClient(target, opts...)
 	if err != nil {
 		log.Fatalf("ERROR: catalog client NewClient: %v", err)
 		return nil, errors.New("error creating grpc client connection")
