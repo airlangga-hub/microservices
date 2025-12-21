@@ -65,7 +65,7 @@ func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb
 
 	if r.Query != "" {
 		products, err = s.Svc.SearchProducts(ctx, r.Query, r.Offset, r.Limit)
-	} else if r.Ids != nil {
+	} else if len(r.Ids) > 0 {
 		products, err = s.Svc.GetProductsByIDs(ctx, r.Ids)
 	} else {
 		products, err = s.Svc.GetProducts(ctx, r.Offset, r.Limit)
