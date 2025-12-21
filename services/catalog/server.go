@@ -33,7 +33,14 @@ func (s *Server) PostProduct(ctx context.Context, r *pb.PostProductRequest) (*pb
 		return nil, err
 	}
 
-	return &pb.PostProductResponse{Product: &pb.Product{Id: product.ID, Name: product.Name, Description: product.Description, Price: product.Price}}, nil
+	return &pb.PostProductResponse{
+		Product: &pb.Product{
+			Id:          product.ID,
+			Name:        product.Name,
+			Description: product.Description,
+			Price:       product.Price,
+		},
+	}, nil
 }
 
 func (s *Server) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.GetProductResponse, error) {
@@ -41,8 +48,15 @@ func (s *Server) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.G
 	if err != nil {
 		return nil, err
 	}
-	
-	return &pb.GetProductResponse{Product: &pb.Product{Id: product.ID, Name: product.Name, Description: product.Description, Price: product.Price}}, nil
+
+	return &pb.GetProductResponse{
+		Product: &pb.Product{
+			Id:          product.ID,
+			Name:        product.Name,
+			Description: product.Description,
+			Price:       product.Price,
+		},
+	}, nil
 }
 
 func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb.GetProductsResponse, error)
