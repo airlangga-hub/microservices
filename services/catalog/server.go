@@ -17,7 +17,7 @@ type Server struct {
 func ListenGrpc(service Service, port string) error {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("ERROR: account server ListenGrpc: %v", err)
+		log.Fatalf("ERROR: catalog server ListenGrpc: %v", err)
 	}
 
 	s := grpc.NewServer()
