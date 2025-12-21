@@ -55,8 +55,13 @@ func NewRepository() (Repository, error) {
 		return nil, errors.New("error creating elastic search client")
 	}
 
-	// create index
-	client.Indices.Create(ESIndex)
+	// create index if not exist
+	_, err = esapi.IndicesExistsRequest{
+		Index: []string{ESIndex},
+	}.Do(context.Background(), client)
+	if err != nil {
+		client.Indices.Create(ESIndex)
+	}
 
 	return &repository{client}, nil
 }
