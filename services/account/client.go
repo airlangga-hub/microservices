@@ -17,8 +17,7 @@ type Client struct {
 }
 
 func NewClient() (*Client, error) {
-	port := os.Getenv("PORT")
-	target := "localhost" + port
+	target := "localhost" + os.Getenv("ACCOUNT_PORT")
 
 	opts := []grpc.DialOption{}
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
