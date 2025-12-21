@@ -60,55 +60,18 @@ func (s *Server) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.G
 }
 
 func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
+	products := []Product{}
 	pbProducts := []*pb.Product{}
+	var err error
 
 	if r.Query != "" {
-		products, err := s.Svc.SearchProducts(ctx, r.Query, r.Offset, r.Limit)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, p := range products {
-			pbProducts = append(
-				pbProducts,
-				&pb.Product{
-					Id:          p.ID,
-					Name:        p.Name,
-					Description: p.Description,
-					Price:       p.Price,
-				},
-			)
-		}
-
-		return &pb.GetProductsResponse{
-			Product: pbProducts,
-		}, nil
+		products, err = s.Svc.SearchProducts(ctx, r.Query, r.Offset, r.Limit)
+	} else if r.Ids != nil {
+		products, err = s.Svc.GetProductsByIDs(ctx, r.Ids)
+	} else {
+		products, err = s.Svc.GetProducts(ctx, r.Offset, r.Limit)
 	}
 
-	if r.Ids != nil {
-		products, err := s.Svc.GetProductsByIDs(ctx, r.Ids)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, p := range products {
-			pbProducts = append(
-				pbProducts,
-				&pb.Product{
-					Id:          p.ID,
-					Name:        p.Name,
-					Description: p.Description,
-					Price:       p.Price,
-				},
-			)
-		}
-
-		return &pb.GetProductsResponse{
-			Product: pbProducts,
-		}, nil
-	}
-
-	products, err := s.Svc.GetProducts(ctx, r.Offset, r.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +89,6 @@ func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb
 	}
 
 	return &pb.GetProductsResponse{
-		Product: pbProducts,
+		Products: pbProducts,
 	}, nil
 }

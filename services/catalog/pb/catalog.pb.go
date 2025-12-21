@@ -351,7 +351,7 @@ func (x *GetProductsRequest) GetQuery() string {
 
 type GetProductsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Product       []*Product             `protobuf:"bytes,1,rep,name=product,proto3" json:"product,omitempty"`
+	Products      []*Product             `protobuf:"bytes,1,rep,name=products,proto3" json:"products,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -386,9 +386,9 @@ func (*GetProductsResponse) Descriptor() ([]byte, []int) {
 	return file_catalog_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetProductsResponse) GetProduct() []*Product {
+func (x *GetProductsResponse) GetProducts() []*Product {
 	if x != nil {
-		return x.Product
+		return x.Products
 	}
 	return nil
 }
@@ -417,9 +417,9 @@ const file_catalog_proto_rawDesc = "" +
 	"\x06offset\x18\x01 \x01(\x05R\x06offset\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x10\n" +
 	"\x03ids\x18\x03 \x03(\tR\x03ids\x12\x14\n" +
-	"\x05query\x18\x04 \x01(\tR\x05query\"<\n" +
-	"\x13GetProductsResponse\x12%\n" +
-	"\aproduct\x18\x01 \x03(\v2\v.pb.ProductR\aproduct2\xcd\x01\n" +
+	"\x05query\x18\x04 \x01(\tR\x05query\">\n" +
+	"\x13GetProductsResponse\x12'\n" +
+	"\bproducts\x18\x01 \x03(\v2\v.pb.ProductR\bproducts2\xcd\x01\n" +
 	"\x0eCatalogService\x12>\n" +
 	"\vPostProduct\x12\x16.pb.PostProductRequest\x1a\x17.pb.PostProductResponse\x12;\n" +
 	"\n" +
@@ -451,7 +451,7 @@ var file_catalog_proto_goTypes = []any{
 var file_catalog_proto_depIdxs = []int32{
 	0, // 0: pb.PostProductResponse.product:type_name -> pb.Product
 	0, // 1: pb.GetProductResponse.product:type_name -> pb.Product
-	0, // 2: pb.GetProductsResponse.product:type_name -> pb.Product
+	0, // 2: pb.GetProductsResponse.products:type_name -> pb.Product
 	1, // 3: pb.CatalogService.PostProduct:input_type -> pb.PostProductRequest
 	3, // 4: pb.CatalogService.GetProduct:input_type -> pb.GetProductRequest
 	5, // 5: pb.CatalogService.GetProducts:input_type -> pb.GetProductsRequest
