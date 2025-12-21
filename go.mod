@@ -3,6 +3,7 @@ module github.com/airlangga-hub/microservices
 go 1.25.3
 
 require (
+	github.com/elastic/go-elasticsearch/v9 v9.2.1
 	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
@@ -10,7 +11,6 @@ require (
 
 require (
 	github.com/elastic/elastic-transport-go/v8 v8.8.0 // indirect
-	github.com/elastic/go-elasticsearch/v9 v9.2.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
