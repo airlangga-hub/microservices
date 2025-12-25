@@ -23,12 +23,12 @@ type repository struct {
 func NewRepository(dbUrl string) (Repository, error) {
 	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
-		log.Println("ERROR: account repo NewRepository: ", err)
+		log.Println("ERROR: account repo NewRepository (sql.Open): ", err)
 		return nil, errors.New("error connecting to db")
 	}
 
 	if err := db.Ping(); err != nil {
-		log.Println("ERROR: account repo NewRepository: ", err)
+		log.Println("ERROR: account repo NewRepository (db.Ping): ", err)
 		return nil, errors.New("error pinging db")
 	}
 
@@ -69,9 +69,12 @@ func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, err
 		FROM accounts
 		WHERE id = $1;`,
 		id,
-	).Scan(&account.ID, &account.Name); err != nil {
+	).Scan(
+		&account.ID,
+		&account.Name,
+	); err != nil {
 		log.Println("ERROR: account repo GetAccountByID: ", err)
-		return Account{}, errors.New("error getting account by id")
+		return Account{}, errors.New("error finding account")
 	}
 
 	return account, nil
@@ -90,7 +93,7 @@ func (r *repository) ListAccounts(ctx context.Context, offset, limit int32) ([]A
 		offset,
 		limit)
 	if err != nil {
-		log.Println("ERROR: account repo ListAccounts: ", err)
+		log.Println("ERROR: account repo ListAccounts (r.db.QueryContext): ", err)
 		return nil, errors.New("error listing accounts")
 	}
 
@@ -100,15 +103,18 @@ func (r *repository) ListAccounts(ctx context.Context, offset, limit int32) ([]A
 
 	for rows.Next() {
 		a := Account{}
-		if err := rows.Scan(&a.ID, &a.Name); err != nil {
-			log.Println("ERROR: account repo ListAccounts: ", err)
+		if err := rows.Scan(
+			&a.ID,
+			&a.Name,
+		); err != nil {
+			log.Println("ERROR: account repo ListAccounts (rows.Scan): ", err)
 			return nil, errors.New("error scanning current row")
 		}
 		accounts = append(accounts, a)
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Println("ERROR: account repo ListAccounts: ", err)
+		log.Println("ERROR: account repo ListAccounts (rows.Err): ", err)
 		return nil, errors.New("error iterating rows")
 	}
 

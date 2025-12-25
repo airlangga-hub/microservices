@@ -39,12 +39,12 @@ type repository struct {
 func NewRepository(dbUrl string) (Repository, error) {
 	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
-		log.Println("ERROR: order repo NewRepository: ", err)
+		log.Println("ERROR: order repo NewRepository (sql.Open): ", err)
 		return nil, errors.New("error opening postgres")
 	}
 
 	if err := db.Ping(); err != nil {
-		log.Println("ERROR: order repo NewRepository: ", err)
+		log.Println("ERROR: order repo NewRepository (db.Ping): ", err)
 		return nil, errors.New("error pinging db")
 	}
 
@@ -148,12 +148,12 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 		)
 
 		if err := rows.Scan(
-			id,
-			account_id,
-			total_price,
-			created_at,
-			product_id,
-			quantity,
+			&id,
+			&account_id,
+			&total_price,
+			&created_at,
+			&product_id,
+			&quantity,
 		); err != nil {
 			log.Println("ERROR: order repo GetOrdersByAccountID (rows.Scan): ", err)
 			return nil, errors.New("error finding account's orders")
@@ -187,9 +187,9 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 		log.Println("ERROR: order repo GetOrdersByAccountID (rows.Err): ", err)
 		return nil, errors.New("error finding account's orders")
 	}
-	
+
 	orders := []*Order{}
-	
+
 	for _, order := range ordersMap {
 		orders = append(orders, order)
 	}
