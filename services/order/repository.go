@@ -29,7 +29,7 @@ type Order struct {
 type Repository interface {
 	Close() error
 	CreateOrder(ctx context.Context, o Order) (Order, error)
-	GetOrdersByAccountID(ctx context.Context, accountID int32) ([]Order, error)
+	GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error)
 }
 
 type repository struct {
@@ -110,35 +110,88 @@ func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 	return o, nil
 }
 
-func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]Order, error) {
+func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		`SELECT
-			id,
-			account_id,
-			total_price,
-			created_at
-		FROM orders
-		WHERE account_id = $1;`,
+			o.id,
+			o.account_id,
+			o.total_price,
+			o.created_at,
+			op.product_id,
+			op.quantity
+		FROM orders o
+		JOIN order_products op
+		ON o.id = op.order_id
+		WHERE account_id = $1
+		ORDER BY o.id;`,
 		accountID,
 	)
 
 	if err != nil {
-		log.Println("ERROR: order repo GetOrdersByAccountID: ", err)
+		log.Println("ERROR: order repo GetOrdersByAccountID (r.db.QueryContext): ", err)
 		return nil, errors.New("error finding account's orders")
 	}
 
 	defer rows.Close()
 
-	orders := []Order{}
+	ordersMap := map[int32]*Order{}
 
 	for rows.Next() {
-		o := Order{}
-		if err := rows.Scan(&o.ID, &o.AccountID, &o.TotalPrice, &o.CreatedAt); err != nil {
-			log.Println("ERROR: order repo GetOrdersByAccountID: ", err)
+		var (
+			id          int32
+			account_id  int32
+			total_price int64
+			created_at  time.Time
+			product_id  string
+			quantity    int32
+		)
+
+		if err := rows.Scan(
+			id,
+			account_id,
+			total_price,
+			created_at,
+			product_id,
+			quantity,
+		); err != nil {
+			log.Println("ERROR: order repo GetOrdersByAccountID (rows.Scan): ", err)
 			return nil, errors.New("error finding account's orders")
 		}
-		orders = append(orders, o)
+
+		if order, exist := ordersMap[id]; !exist {
+			ordersMap[id] = &Order{
+				ID:         id,
+				AccountID:  account_id,
+				TotalPrice: total_price,
+				CreatedAt:  created_at,
+				Products: []OrderedProduct{
+					{
+						ID:       product_id,
+						Quantity: quantity,
+					},
+				},
+			}
+		} else {
+			order.Products = append(
+				order.Products,
+				OrderedProduct{
+					ID:       product_id,
+					Quantity: quantity,
+				},
+			)
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Println("ERROR: order repo GetOrdersByAccountID (rows.Err): ", err)
+		return nil, errors.New("error finding account's orders")
+	}
+	
+	orders := []*Order{}
+	
+	for _, order := range ordersMap {
+		orders = append(orders, order)
 	}
 
 	return orders, nil
