@@ -72,9 +72,14 @@ func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 		ctx,
 		`INSERT INTO orders (account_id, total_price)
 		VALUES ($1, $2)
-		RETURNING id, created_at;`,
+		RETURNING
+			id,
+			created_at;`,
 		o.AccountID, o.TotalPrice,
-	).Scan(&o.ID, &o.CreatedAt); err != nil {
+	).Scan(
+		&o.ID,
+		&o.CreatedAt,
+	); err != nil {
 		log.Println("ERROR: order repo CreateOrder (insert order): ", err)
 		return Order{}, errors.New("error creating order")
 	}
