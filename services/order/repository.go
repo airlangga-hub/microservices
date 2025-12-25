@@ -61,8 +61,40 @@ func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 		log.Println("ERROR: order repo CreateOrder: ", err)
 		return Order{}, errors.New("error creating order")
 	}
-	
+
 	return o, nil
 }
 
-func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]Order, error)
+func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]Order, error) {
+	rows, err := r.db.QueryContext(
+		ctx,
+		`SELECT
+			id,
+			account_id,
+			total_price,
+			created_at
+		FROM orders
+		WHERE account_id = $1;`,
+		accountID,
+	)
+
+	if err != nil {
+		log.Println("ERROR: order repo GetOrdersByAccountID: ", err)
+		return nil, errors.New("error finding account's orders")
+	}
+
+	defer rows.Close()
+
+	orders := []Order{}
+
+	for rows.Next() {
+		o := Order{}
+		if err := rows.Scan(&o.ID, &o.AccountID, &o.TotalPrice, &o.CreatedAt); err != nil {
+			log.Println("ERROR: order repo GetOrdersByAccountID: ", err)
+			return nil, errors.New("error scanning current row")
+		}
+		orders = append(orders, o)
+	}
+	
+	return orders, nil
+}
