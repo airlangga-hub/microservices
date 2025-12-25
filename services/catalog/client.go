@@ -36,7 +36,7 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
-func (c *Client) PostProduct(ctx context.Context, name, description string, price float32) (Product, error) {
+func (c *Client) PostProduct(ctx context.Context, name, description string, price int64) (Product, error) {
 	res, err := c.Service.PostProduct(
 		ctx,
 		&pb.PostProductRequest{
@@ -92,20 +92,20 @@ func (c *Client) GetProducts(ctx context.Context, query string, ids []string, of
 		log.Println("ERROR: catalog client GetProducts: ", err)
 		return nil, errors.New("error client get products")
 	}
-	
+
 	products := []Product{}
-	
+
 	for _, p := range res.Products {
 		products = append(
 			products,
 			Product{
-				ID: p.Id,
-				Name: p.Name,
+				ID:          p.Id,
+				Name:        p.Name,
 				Description: p.Description,
-				Price: p.Price,
+				Price:       p.Price,
 			},
 		)
 	}
-	
+
 	return products, nil
 }

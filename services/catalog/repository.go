@@ -28,13 +28,13 @@ type Product struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
+	Price       int64 `json:"price"`
 }
 
 type productDocument struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
+	Price       int64 `json:"price"`
 }
 
 const ESIndex = "catalog"

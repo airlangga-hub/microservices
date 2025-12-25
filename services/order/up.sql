@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
   account_id INTEGER NOT NULL,
-  total_price MONEY NOT NULL,
+  total_price BIGINT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

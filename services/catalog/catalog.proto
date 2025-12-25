@@ -7,13 +7,13 @@ message Product {
     string id = 1;
     string name = 2;
     string description = 3;
-    float price = 4;
+    int64 price = 4;
 }
 
 message PostProductRequest {
     string name = 1;
     string description = 2;
-    float price = 3;
+    int64 price = 3;
 }
 
 message PostProductResponse {
