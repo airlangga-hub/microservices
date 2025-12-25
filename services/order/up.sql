@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_orders_account_id ON orders (account_id);
+
 CREATE TABLE IF NOT EXISTS order_products (
   order_id INTEGER REFERENCES orders (id) ON DELETE CASCADE,
   product_id TEXT NOT NULL,

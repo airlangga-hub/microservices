@@ -10,11 +10,20 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type OrderedProduct struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       int64  `json:"price"`
+	Quantity    int32  `json:"quantity"`
+}
+
 type Order struct {
-	ID         int32     `json:"id"`
-	AccountID  int32     `json:"account_id"`
-	TotalPrice int64     `json:"total_price"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID         int32            `json:"id"`
+	AccountID  int32            `json:"account_id"`
+	Products   []OrderedProduct `json:"products"`
+	TotalPrice int64            `json:"total_price"`
+	CreatedAt  time.Time        `json:"created_at"`
 }
 
 type Repository interface {
@@ -95,6 +104,6 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 		}
 		orders = append(orders, o)
 	}
-	
+
 	return orders, nil
 }
