@@ -1,11 +1,15 @@
 package order
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type Order struct {
-	ID        int32 `json:"id"`
-	AccountID int32 `json:"id"`
-	TotalPrice 
+	ID         int32     `json:"id"`
+	AccountID  int32     `json:"account_id"`
+	TotalPrice int64     `json:"total_price"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type Repository interface {
