@@ -44,20 +44,32 @@ func (r *repository) Close() error {
 }
 
 func (r *repository) CreateAccount(ctx context.Context, a Account) (Account, error) {
-	account := Account{}
-	
-	if err := r.db.QueryRowContext(ctx, "INSERT INTO accounts(name) VALUES($1) RETURNING id, name", a.Name).Scan(&account.ID, &account.Name); err != nil {
+	if err := r.db.QueryRowContext(
+		ctx,
+		`INSERT INTO accounts (name)
+		VALUES ($1)
+		RETURNING id, name;`,
+		a.Name,
+	).Scan(&a.ID, &a.Name); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
 		return Account{}, errors.New("error creating account")
 	}
 
-	return account, nil
+	return a, nil
 }
 
 func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, error) {
 	account := Account{}
 
-	if err := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id=$1", id).Scan(&account.ID, &account.Name); err != nil {
+	if err := r.db.QueryRowContext(
+		ctx,
+		`SELECT
+			id,
+			name
+		FROM accounts
+		WHERE id = $1;`,
+		id,
+	).Scan(&account.ID, &account.Name); err != nil {
 		log.Println("ERROR: account repo GetAccountByID: ", err)
 		return Account{}, errors.New("error getting account by id")
 	}
@@ -68,7 +80,13 @@ func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, err
 func (r *repository) ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
-		"SELECT id, name FROM accounts ORDER BY id DESC OFFSET $1 LIMIT $2",
+		`SELECT
+			id,
+			name
+		FROM accounts
+		ORDER BY id DESC
+		OFFSET $1
+		LIMIT $2;`,
 		offset,
 		limit)
 	if err != nil {
