@@ -15,6 +15,17 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s *service) PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error) 
+func (s *service) PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error) {
+	order := Order{
+		AccountID: accountID,
+		Products: products,
+	}
+	
+	for _, p := range products {
+		order.TotalPrice += p.Price * int64(p.Quantity)
+	}
+	
+	return s.repository.CreateOrder(ctx, order)
+}
 
 func (s *service) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error)
