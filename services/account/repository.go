@@ -48,9 +48,9 @@ func (r *repository) CreateAccount(ctx context.Context, a Account) (Account, err
 		ctx,
 		`INSERT INTO accounts (name)
 		VALUES ($1)
-		RETURNING id, name;`,
+		RETURNING id;`,
 		a.Name,
-	).Scan(&a.ID, &a.Name); err != nil {
+	).Scan(&a.ID); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
 		return Account{}, errors.New("error creating account")
 	}
