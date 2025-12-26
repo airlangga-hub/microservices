@@ -147,40 +147,32 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		return nil, err
 	}
 
-	pbOrders := []*pb.Order{}
+	productIDs := []string{}
+	mapOrderIdToProductIdsQty := map[int32][]map[string]int32{}
 
 	for _, order := range orders {
-		createdAt, err := order.CreatedAt.MarshalBinary()
-		if err != nil {
-			log.Println("ERROR: order server GetOrdersByAccountID (MarshalBinary): ", err)
-			return nil, errors.New("error finding account's orders")
-		}
-
-		pbProducts := []*pb.OrderedProduct{}
-
 		for _, product := range order.Products {
-			pbProducts = append(
-				pbProducts,
-				&pb.OrderedProduct{
-					Id:          product.ID,
-					Name:        product.Name,
-					Description: product.Description,
-					Price:       product.Price,
-					Quantity:    product.Quantity,
+
+			productIDs = append(productIDs, product.ID)
+
+			mapOrderIdToProductIdsQty[order.ID] = append(
+				mapOrderIdToProductIdsQty[order.ID],
+				map[string]int32{
+					product.ID: product.Quantity,
 				},
 			)
 		}
+	}
 
-		pbOrders = append(
-			pbOrders,
-			&pb.Order{
-				Id:         order.ID,
-				AccountId:  order.AccountID,
-				Products:   pbProducts,
-				TotalPrice: order.TotalPrice,
-				CreatedAt:  createdAt,
-			},
-		)
+	products, err := s.CatalogClient.GetProducts(
+		ctx,
+		"",
+		productIDs,
+		0,
+		0,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return &pb.GetOrdersByAccountIDResponse{
