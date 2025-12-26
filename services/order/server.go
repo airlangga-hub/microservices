@@ -23,11 +23,13 @@ func ListenGrpc(service Service, port string) error {
 	if err != nil {
 		log.Fatalf("ERROR: order server ListenGrpc (account.NewClient): %v", err)
 	}
+	defer accountClient.Conn.Close()
 
 	catalogClient, err := catalog.NewClient()
 	if err != nil {
 		log.Fatalf("ERROR: order server ListenGrpc (catalog.NewClient): %v", err)
 	}
+	defer catalogClient.Conn.Close()
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
