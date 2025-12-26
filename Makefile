@@ -13,3 +13,11 @@ gen-catalog:
 			--go_out=./pb --go_opt=paths=source_relative \
 			--go-grpc_out=./pb --go-grpc_opt=paths=source_relative \
 			catalog.proto
+
+gen-order:
+	mkdir -p ./services/order/pb
+	cd services/order && \
+		protoc \
+			--go_out=./pb --go_opt=paths=source_relative \
+			--go-grpc_out=./pb --go-grpc_opt=paths=source_relative \
+			order.proto
