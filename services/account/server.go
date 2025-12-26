@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net"
 
 	"github.com/airlangga-hub/microservices/services/account/pb"
@@ -17,7 +17,7 @@ type Server struct {
 func ListenGrpc(service Service, port string) error {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("ERROR: account server ListenGrpc: %v", err)
+		return fmt.Errorf("ERROR: account server ListenGrpc: %v", err)
 	}
 
 	s := grpc.NewServer()

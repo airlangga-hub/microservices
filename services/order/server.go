@@ -2,7 +2,7 @@ package order
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net"
 
 	"github.com/airlangga-hub/microservices/services/account"
@@ -21,19 +21,19 @@ type Server struct {
 func ListenGrpc(service Service, port string) error {
 	accountClient, err := account.NewClient()
 	if err != nil {
-		log.Fatalf("ERROR: order server ListenGrpc (account.NewClient): %v", err)
+		return fmt.Errorf("ERROR: order server ListenGrpc (account.NewClient): %v", err)
 	}
 	defer accountClient.Conn.Close()
 
 	catalogClient, err := catalog.NewClient()
 	if err != nil {
-		log.Fatalf("ERROR: order server ListenGrpc (catalog.NewClient): %v", err)
+		return fmt.Errorf("ERROR: order server ListenGrpc (catalog.NewClient): %v", err)
 	}
 	defer catalogClient.Conn.Close()
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("ERROR: order server ListenGrpc (net.Listen): %v", err)
+		return fmt.Errorf("ERROR: order server ListenGrpc (net.Listen): %v", err)
 	}
 
 	s := grpc.NewServer()

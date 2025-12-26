@@ -2,7 +2,7 @@ package catalog
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net"
 
 	"github.com/airlangga-hub/microservices/services/catalog/pb"
@@ -17,7 +17,7 @@ type Server struct {
 func ListenGrpc(service Service, port string) error {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("ERROR: catalog server ListenGrpc: %v", err)
+		return fmt.Errorf("ERROR: catalog server ListenGrpc: %v", err)
 	}
 
 	s := grpc.NewServer()
