@@ -8,8 +8,6 @@ import (
 func main() {
 	dbUrl := os.Getenv("ORDER_DB_URL")
 	port := os.Getenv("ORDER_PORT")
-	accountServiceUrl := os.Getenv("ACCOUNT_SERVICE_URL")
-	catalogServiceUrl := os.Getenv("CATALOG_SERVICE_URL")
 
 	repository, err := NewRepository(dbUrl)
 	if err != nil {
@@ -19,5 +17,5 @@ func main() {
 	
 	service := NewService(repository)
 	
-	log.Fatal(ListenGrpc(service, port, accountServiceUrl, catalogServiceUrl))
+	log.Fatal(ListenGrpc(service, port))
 }

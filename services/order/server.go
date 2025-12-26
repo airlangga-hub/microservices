@@ -18,15 +18,32 @@ type Server struct {
 	CatalogClient *catalog.Client
 }
 
-func ListenGrpc(service Service, port, accountServiceUrl, catalogServiceUrl string) error {
+func ListenGrpc(service Service, port string) error {
+	accountClient, err := account.NewClient()
+	if err != nil {
+		log.Fatalf("ERROR: order server ListenGrpc (account.NewClient): %v", err)
+	}
+
+	catalogClient, err := catalog.NewClient()
+	if err != nil {
+		log.Fatalf("ERROR: order server ListenGrpc (catalog.NewClient): %v", err)
+	}
+
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("ERROR: account server ListenGrpc: %v", err)
+		log.Fatalf("ERROR: order server ListenGrpc (net.Listen): %v", err)
 	}
 
 	s := grpc.NewServer()
 
-	pb.RegisterOrderServiceServer(s, &Server{Svc: service})
+	pb.RegisterOrderServiceServer(
+		s,
+		&Server{
+			Svc:           service,
+			AccountClient: accountClient,
+			CatalogClient: catalogClient,
+		},
+	)
 
 	return s.Serve(lis)
 }
