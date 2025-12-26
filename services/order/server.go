@@ -50,6 +50,8 @@ func ListenGrpc(service Service, port string) error {
 	return s.Serve(lis)
 }
 
-func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.PostOrderResponse, error)
+func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.PostOrderResponse, error) {
+	_, err := s.AccountClient.GetAccount(ctx, r.AccountId)
+}
 
 func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAccountIDRequest) (*pb.GetOrdersByAccountIDResponse, error)

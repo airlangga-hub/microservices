@@ -22,7 +22,7 @@ message Order {
 }
 
 message PostOrderRequest {
-    string account_id = 1;
+    int32 account_id = 1;
     repeated OrderedProduct products = 2;
 }
 

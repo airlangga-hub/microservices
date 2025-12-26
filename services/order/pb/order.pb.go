@@ -176,7 +176,7 @@ func (x *Order) GetCreatedAt() *timestamppb.Timestamp {
 
 type PostOrderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	AccountId     int32                  `protobuf:"varint,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	Products      []*OrderedProduct      `protobuf:"bytes,2,rep,name=products,proto3" json:"products,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -212,11 +212,11 @@ func (*PostOrderRequest) Descriptor() ([]byte, []int) {
 	return file_order_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *PostOrderRequest) GetAccountId() string {
+func (x *PostOrderRequest) GetAccountId() int32 {
 	if x != nil {
 		return x.AccountId
 	}
-	return ""
+	return 0
 }
 
 func (x *PostOrderRequest) GetProducts() []*OrderedProduct {
@@ -468,7 +468,7 @@ const file_order_proto_rawDesc = "" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"a\n" +
 	"\x10PostOrderRequest\x12\x1d\n" +
 	"\n" +
-	"account_id\x18\x01 \x01(\tR\taccountId\x12.\n" +
+	"account_id\x18\x01 \x01(\x05R\taccountId\x12.\n" +
 	"\bproducts\x18\x02 \x03(\v2\x12.pb.OrderedProductR\bproducts\"4\n" +
 	"\x11PostOrderResponse\x12\x1f\n" +
 	"\x05order\x18\x01 \x01(\v2\t.pb.OrderR\x05order\"!\n" +
