@@ -9,7 +9,6 @@ package pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -104,7 +103,7 @@ type Order struct {
 	AccountId     int32                  `protobuf:"varint,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
 	Products      []*OrderedProduct      `protobuf:"bytes,3,rep,name=products,proto3" json:"products,omitempty"`
 	TotalPrice    int64                  `protobuf:"varint,4,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt     []byte                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -167,7 +166,7 @@ func (x *Order) GetTotalPrice() int64 {
 	return 0
 }
 
-func (x *Order) GetCreatedAt() *timestamppb.Timestamp {
+func (x *Order) GetCreatedAt() []byte {
 	if x != nil {
 		return x.CreatedAt
 	}
@@ -450,22 +449,22 @@ var File_order_proto protoreflect.FileDescriptor
 
 const file_order_proto_rawDesc = "" +
 	"\n" +
-	"\vorder.proto\x12\x02pb\x1a\x1fgoogle/protobuf/timestamp.proto\"\x88\x01\n" +
+	"\vorder.proto\x12\x02pb\"\x88\x01\n" +
 	"\x0eOrderedProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05price\x18\x04 \x01(\x03R\x05price\x12\x1a\n" +
-	"\bquantity\x18\x05 \x01(\x05R\bquantity\"\xc2\x01\n" +
+	"\bquantity\x18\x05 \x01(\x05R\bquantity\"\xa6\x01\n" +
 	"\x05Order\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x02 \x01(\x05R\taccountId\x12.\n" +
 	"\bproducts\x18\x03 \x03(\v2\x12.pb.OrderedProductR\bproducts\x12\x1f\n" +
 	"\vtotal_price\x18\x04 \x01(\x03R\n" +
-	"totalPrice\x129\n" +
+	"totalPrice\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"a\n" +
+	"created_at\x18\x05 \x01(\fR\tcreatedAt\"a\n" +
 	"\x10PostOrderRequest\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x01 \x01(\x05R\taccountId\x12.\n" +
@@ -507,24 +506,22 @@ var file_order_proto_goTypes = []any{
 	(*GetOrderResponse)(nil),             // 5: pb.GetOrderResponse
 	(*GetOrdersByAccountIDRequest)(nil),  // 6: pb.GetOrdersByAccountIDRequest
 	(*GetOrdersByAccountIDResponse)(nil), // 7: pb.GetOrdersByAccountIDResponse
-	(*timestamppb.Timestamp)(nil),        // 8: google.protobuf.Timestamp
 }
 var file_order_proto_depIdxs = []int32{
 	0, // 0: pb.Order.products:type_name -> pb.OrderedProduct
-	8, // 1: pb.Order.created_at:type_name -> google.protobuf.Timestamp
-	0, // 2: pb.PostOrderRequest.products:type_name -> pb.OrderedProduct
-	1, // 3: pb.PostOrderResponse.order:type_name -> pb.Order
-	1, // 4: pb.GetOrderResponse.order:type_name -> pb.Order
-	1, // 5: pb.GetOrdersByAccountIDResponse.orders:type_name -> pb.Order
-	2, // 6: pb.OrderService.PostOrder:input_type -> pb.PostOrderRequest
-	6, // 7: pb.OrderService.GetOrdersByAccountID:input_type -> pb.GetOrdersByAccountIDRequest
-	3, // 8: pb.OrderService.PostOrder:output_type -> pb.PostOrderResponse
-	7, // 9: pb.OrderService.GetOrdersByAccountID:output_type -> pb.GetOrdersByAccountIDResponse
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	0, // 1: pb.PostOrderRequest.products:type_name -> pb.OrderedProduct
+	1, // 2: pb.PostOrderResponse.order:type_name -> pb.Order
+	1, // 3: pb.GetOrderResponse.order:type_name -> pb.Order
+	1, // 4: pb.GetOrdersByAccountIDResponse.orders:type_name -> pb.Order
+	2, // 5: pb.OrderService.PostOrder:input_type -> pb.PostOrderRequest
+	6, // 6: pb.OrderService.GetOrdersByAccountID:input_type -> pb.GetOrdersByAccountIDRequest
+	3, // 7: pb.OrderService.PostOrder:output_type -> pb.PostOrderResponse
+	7, // 8: pb.OrderService.GetOrdersByAccountID:output_type -> pb.GetOrdersByAccountIDResponse
+	7, // [7:9] is the sub-list for method output_type
+	5, // [5:7] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_order_proto_init() }

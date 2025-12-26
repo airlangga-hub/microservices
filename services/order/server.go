@@ -2,7 +2,9 @@ package order
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/airlangga-hub/microservices/services/account"
@@ -55,8 +57,78 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 	if err != nil {
 		return nil, err
 	}
-	
-	s.CatalogClient.GetProducts()
+
+	productIDs := []string{}
+	mapIdQty := map[string]int32{}
+
+	for _, p := range r.Products {
+		productIDs = append(productIDs, p.Id)
+		mapIdQty[p.Id] = p.Quantity
+	}
+
+	products, err := s.CatalogClient.GetProducts(
+		ctx,
+		"",
+		productIDs,
+		0,
+		0,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	orderedProducts := []OrderedProduct{}
+
+	for _, p := range products {
+		if qty, exist := mapIdQty[p.ID]; exist {
+			orderedProducts = append(
+				orderedProducts,
+				OrderedProduct{
+					ID: p.ID,
+					Name: p.Name,
+					Description: p.Description,
+					Price: p.Price,
+					Quantity: qty,
+				},
+			)
+		}
+	}
+
+	order, err := s.Svc.PostOrder(ctx, r.AccountId, orderedProducts)
+	if err != nil {
+		return nil, err
+	}
+
+	pbProducts := []*pb.OrderedProduct{}
+
+	for _, p := range order.Products {
+		pbProducts = append(
+			pbProducts,
+			&pb.OrderedProduct{
+				Id: p.ID,
+				Name: p.Name,
+				Description: p.Description,
+				Price: p.Price,
+				Quantity: p.Quantity,
+			},
+		)
+	}
+
+	createdAt, err := order.CreatedAt.MarshalBinary()
+	if err != nil {
+		log.Println("ERROR: order server PostOrder (MarshalBinary): ", err)
+		return nil, errors.New("error creating order")
+	}
+
+	return &pb.PostOrderResponse{
+		Order: &pb.Order{
+			Id: order.ID,
+			AccountId: order.AccountID,
+			Products: pbProducts,
+			TotalPrice: order.TotalPrice,
+			CreatedAt: createdAt,
+		},
+	}, nil
 }
 
 func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAccountIDRequest) (*pb.GetOrdersByAccountIDResponse, error)

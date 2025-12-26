@@ -3,8 +3,6 @@ package pb;
 
 option go_package = "github.com/airlangga-hub/microservices/services/order/pb";
 
-import "google/protobuf/timestamp.proto";
-
 message OrderedProduct {
     string id = 1;
     string name = 2;
@@ -18,7 +16,7 @@ message Order {
     int32 account_id = 2;
     repeated OrderedProduct products = 3;
     int64 total_price = 4;
-    google.protobuf.Timestamp created_at = 5;
+    bytes created_at = 5;
 }
 
 message PostOrderRequest {
