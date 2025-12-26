@@ -147,20 +147,13 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		return nil, err
 	}
 
-	productIDs := []string{}
-	mapOrderIdToProductIdsQty := map[int32][]map[string]int32{}
+	productIdSet := map[string]struct{}{}
 
 	for _, order := range orders {
 		for _, product := range order.Products {
 
-			productIDs = append(productIDs, product.ID)
-
-			mapOrderIdToProductIdsQty[order.ID] = append(
-				mapOrderIdToProductIdsQty[order.ID],
-				map[string]int32{
-					product.ID: product.Quantity,
-				},
-			)
+			productIdSet[product.ID] = struct{}{}
+			
 		}
 	}
 
