@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	dbUrl := os.Getenv("POSTGRES_DB_URL")
+	dbUrl := os.Getenv("ACCOUNT_DB_URL")
 	port := os.Getenv("ACCOUNT_PORT")
 	
 	repository, err := NewRepository(dbUrl)
