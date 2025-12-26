@@ -61,11 +61,11 @@ func (r *repository) Close() error {
 
 func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
-	defer tx.Rollback()
 	if err != nil {
 		log.Println("ERROR: order repo CreateOrder (tx init): ", err)
 		return Order{}, errors.New("error creating order")
 	}
+	defer tx.Rollback()
 
 	// insert order
 	if err = tx.QueryRowContext(
@@ -86,11 +86,11 @@ func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 
 	// insert order products
 	stmt, err := tx.PrepareContext(ctx, pq.CopyIn("order_products", "order_id", "product_id", "quantity"))
-	defer stmt.Close()
 	if err != nil {
 		log.Println("ERROR: order repo CreateOrder (stmt prepare): ", err)
 		return Order{}, errors.New("error creating order")
 	}
+	defer stmt.Close()
 
 	for _, p := range o.Products {
 		_, err := stmt.ExecContext(ctx, o.ID, p.ID, p.Quantity)
