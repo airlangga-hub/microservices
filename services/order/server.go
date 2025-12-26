@@ -84,14 +84,19 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 			orderedProducts = append(
 				orderedProducts,
 				OrderedProduct{
-					ID: p.ID,
-					Name: p.Name,
+					ID:          p.ID,
+					Name:        p.Name,
 					Description: p.Description,
-					Price: p.Price,
-					Quantity: qty,
+					Price:       p.Price,
+					Quantity:    qty,
 				},
 			)
 		}
+	}
+
+	if len(orderedProducts) != len(r.Products) {
+		log.Println("ERROR: order server PostOrder (check length): ", err)
+		return nil, errors.New("one or more products not found")
 	}
 
 	order, err := s.Svc.PostOrder(ctx, r.AccountId, orderedProducts)
@@ -105,11 +110,11 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 		pbProducts = append(
 			pbProducts,
 			&pb.OrderedProduct{
-				Id: p.ID,
-				Name: p.Name,
+				Id:          p.ID,
+				Name:        p.Name,
 				Description: p.Description,
-				Price: p.Price,
-				Quantity: p.Quantity,
+				Price:       p.Price,
+				Quantity:    p.Quantity,
 			},
 		)
 	}
@@ -122,11 +127,11 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 
 	return &pb.PostOrderResponse{
 		Order: &pb.Order{
-			Id: order.ID,
-			AccountId: order.AccountID,
-			Products: pbProducts,
+			Id:         order.ID,
+			AccountId:  order.AccountID,
+			Products:   pbProducts,
 			TotalPrice: order.TotalPrice,
-			CreatedAt: createdAt,
+			CreatedAt:  createdAt,
 		},
 	}, nil
 }
