@@ -55,6 +55,8 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 	if err != nil {
 		return nil, err
 	}
+	
+	s.CatalogClient.GetProducts()
 }
 
 func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAccountIDRequest) (*pb.GetOrdersByAccountIDResponse, error)

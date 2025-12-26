@@ -47,7 +47,7 @@ func (c *Client) PostProduct(ctx context.Context, name, description string, pric
 	)
 	if err != nil {
 		log.Println("ERROR: catalog client PostProduct: ", err)
-		return Product{}, errors.New("error client post product")
+		return Product{}, errors.New("error creating product")
 	}
 
 	return Product{
@@ -67,7 +67,7 @@ func (c *Client) GetProduct(ctx context.Context, id string) (Product, error) {
 	)
 	if err != nil {
 		log.Println("ERROR: catalog client GetProduct: ", err)
-		return Product{}, errors.New("error client get product")
+		return Product{}, errors.New("product not found")
 	}
 
 	return Product{
@@ -90,7 +90,7 @@ func (c *Client) GetProducts(ctx context.Context, query string, ids []string, of
 	)
 	if err != nil {
 		log.Println("ERROR: catalog client GetProducts: ", err)
-		return nil, errors.New("error client get products")
+		return nil, errors.New("products not found")
 	}
 
 	products := []Product{}
