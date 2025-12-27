@@ -142,6 +142,8 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		return nil, err
 	}
 
+	// the products inside each order only contains product_id and quantity
+	// we need to get the name, description, price from catalog
 	orders, err := s.Svc.GetOrdersByAccountID(ctx, r.AccountId)
 	if err != nil {
 		return nil, err
@@ -153,11 +155,17 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		for _, product := range order.Products {
 
 			productIdSet[product.ID] = struct{}{}
-			
+
 		}
 	}
 
-	products, err := s.CatalogClient.GetProducts(
+	productIDs := []string{}
+
+	for productID, _ := range productIdSet {
+		productIDs = append(productIDs, productID)
+	}
+
+	catalogProducts, err := s.CatalogClient.GetProducts(
 		ctx,
 		"",
 		productIDs,
@@ -166,6 +174,57 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	mapCatalogProducts := map[string]catalog.Product{}
+
+	for _, cp := range catalogProducts {
+		mapCatalogProducts[cp.ID] = cp
+	}
+
+	pbOrders := []*pb.Order{}
+
+	for _, order := range orders {
+
+		pbProducts := []*pb.OrderedProduct{}
+
+		for _, product := range order.Products {
+			if cp, exist := mapCatalogProducts[product.ID]; exist {
+
+				pbProducts = append(
+					pbProducts,
+					&pb.OrderedProduct{
+						Id:          cp.ID,
+						Name:        cp.Name,
+						Description: cp.Description,
+						Price:       cp.Price,
+						Quantity:    product.Quantity,
+					},
+				)
+			}
+		}
+
+		if len(order.Products) != len(pbProducts) {
+			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
+			return nil, errors.New("error finding account's order")
+		}
+
+		createdAt, err := order.CreatedAt.MarshalBinary()
+		if err != nil {
+			log.Println("ERROR: order server GetOrdersByAccountID (MarshalBinary): ", err)
+			return nil, errors.New("error finding account's order")
+		}
+
+		pbOrders = append(
+			pbOrders,
+			&pb.Order{
+				Id:         order.ID,
+				AccountId:  order.AccountID,
+				Products:   pbProducts,
+				TotalPrice: order.TotalPrice,
+				CreatedAt:  createdAt,
+			},
+		)
 	}
 
 	return &pb.GetOrdersByAccountIDResponse{
