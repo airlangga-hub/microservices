@@ -87,4 +87,54 @@ func (c *Client) PostOrder(ctx context.Context, accountID int32, products []Orde
 	}, nil
 }
 
-func (c *Client) GetOrdersByAccountID()
+func (c *Client) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error) {
+	res, err := c.Service.GetOrdersByAccountID(
+		ctx,
+		&pb.GetOrdersByAccountIDRequest{
+			AccountId: accountID,
+		},
+	)
+	if err != nil {
+		log.Println("ERROR: order client GetOrdersByAccountID (Service.PostOrder): ", err)
+		return nil, errors.New("error finding account's order order")
+	}
+
+	orders := []*Order{}
+
+	for _, pbOrder := range res.Orders {
+
+		products := []OrderedProduct{}
+
+		for _, pbOrderedProduct := range pbOrder.Products {
+			products = append(
+				products,
+				OrderedProduct{
+					ID:          pbOrderedProduct.Id,
+					Name:        pbOrderedProduct.Name,
+					Description: pbOrderedProduct.Description,
+					Price:       pbOrderedProduct.Price,
+					Quantity:    pbOrderedProduct.Quantity,
+				},
+			)
+		}
+
+		t := time.Time{}
+		if err := t.UnmarshalBinary(pbOrder.CreatedAt); err != nil {
+			log.Println("ERROR: order client GetOrdersByAccountID (t.UnmarshalBinary): ", err)
+			return nil, errors.New("error finding account's order order")
+		}
+
+		orders = append(
+			orders,
+			&Order{
+				ID:         pbOrder.Id,
+				AccountID:  pbOrder.AccountId,
+				Products:   products,
+				TotalPrice: pbOrder.TotalPrice,
+				CreatedAt:  t,
+			},
+		)
+	}
+	
+	return orders, nil
+}
