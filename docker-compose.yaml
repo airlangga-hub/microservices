@@ -1,7 +1,77 @@
 services:
   account:
+    build:
+      context: ./services/account
+      dockerfile: app.dockerfile
+    depends_on:
+      - account_db
+    environment:
+      ACCOUNT_DB_URL: postgres://angga:123456@account_db:5432/angga?sslmode=disable
+      ACCOUNT_PORT: :9090
+    ports:
+      - "9090:9090"
+    restart: on-failure
+
   catalog:
+    build:
+      context: ./services/catalog
+      dockerfile: app.dockerfile
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      CATALOG_PORT: :9091
+    ports:
+      - "9091:9091"
+    restart: on-failure
+
   order:
+    build:
+      context: ./services/order
+      dockerfile: app.dockerfile
+    depends_on:
+      - order_db
+    environment:
+      DATABASE_URL: postgres://angga:123456@order_db:5432/angga?sslmode=disable
+      ORDER_PORT: :9092
+      ACCOUNT_SERVICE_URL: account:9090
+      CATALOG_SERVICE_URL: catalog:9091
+    ports:
+      - "9092:9092"
+    restart: on-failure
+
   account_db:
-  catalog_db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: angga
+      POSTGRES_USER: angga
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - account_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23 # Updated
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    restart: unless-stopped
+
   order_db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: angga
+      POSTGRES_USER: angga
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - order_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  account_pgdata:
+  order_pgdata:
+  esdata:
