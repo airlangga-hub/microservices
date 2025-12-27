@@ -13,6 +13,7 @@ import (
 )
 
 type Repository interface {
+	Close(ctx context.Context) error
 	CreateProduct(ctx context.Context, p productDocument) (Product, error)
 	GetProductByID(ctx context.Context, id string) (Product, error)
 	ListProducts(ctx context.Context, offset, limit int32) ([]Product, error)
@@ -25,16 +26,16 @@ type repository struct {
 }
 
 type Product struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       int64 `json:"price"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       int64  `json:"price"`
 }
 
 type productDocument struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       int64 `json:"price"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       int64  `json:"price"`
 }
 
 const ESIndex = "catalog"
@@ -64,6 +65,15 @@ func NewRepository() (Repository, error) {
 	}
 
 	return &repository{client}, nil
+}
+
+func (r *repository) Close(ctx context.Context) error {
+	if err := r.client.Close(ctx); err != nil {
+		log.Println("ERROR: catalog repo Close: ", err)
+		return errors.New("error closing elastic search client")
+	}
+	
+	return nil
 }
 
 func (r *repository) CreateProduct(ctx context.Context, p productDocument) (Product, error) {
