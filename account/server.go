@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/airlangga-hub/microservices/services/account/pb"
+	"github.com/airlangga-hub/microservices/account/pb"
 	"google.golang.org/grpc"
 )
 
