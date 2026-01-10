@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/airlangga-hub/microservices/services/catalog/pb"
+	"github.com/airlangga-hub/microservices/catalog/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
