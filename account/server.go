@@ -1,30 +1,14 @@
-package account
+package main
 
 import (
 	"context"
-	"fmt"
-	"net"
 
 	"github.com/airlangga-hub/microservices/account/pb"
-	"google.golang.org/grpc"
 )
 
 type Server struct {
 	pb.UnimplementedAccountServiceServer
 	Svc Service
-}
-
-func ListenGrpc(service Service, port string) error {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		return fmt.Errorf("ERROR: account server ListenGrpc: %v", err)
-	}
-
-	s := grpc.NewServer()
-
-	pb.RegisterAccountServiceServer(s, &Server{Svc: service})
-
-	return s.Serve(lis)
 }
 
 func (s *Server) PostAccount(ctx context.Context, r *pb.PostAccountRequest) (*pb.PostAccountResponse, error) {
