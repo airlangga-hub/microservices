@@ -1,30 +1,14 @@
-package catalog
+package main
 
 import (
 	"context"
-	"fmt"
-	"net"
 
 	"github.com/airlangga-hub/microservices/catalog/pb"
-	"google.golang.org/grpc"
 )
 
 type Server struct {
 	pb.UnimplementedCatalogServiceServer
 	Svc Service
-}
-
-func ListenGrpc(service Service, port string) error {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		return fmt.Errorf("ERROR: catalog server ListenGrpc: %v", err)
-	}
-
-	s := grpc.NewServer()
-
-	pb.RegisterCatalogServiceServer(s, &Server{Svc: service})
-
-	return s.Serve(lis)
 }
 
 func (s *Server) PostProduct(ctx context.Context, r *pb.PostProductRequest) (*pb.PostProductResponse, error) {
