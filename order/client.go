@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/airlangga-hub/microservices/services/order/pb"
+	"github.com/airlangga-hub/microservices/order/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

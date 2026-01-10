@@ -7,31 +7,36 @@ import (
 	"log"
 	"net"
 
-	"github.com/airlangga-hub/microservices/services/account"
-	"github.com/airlangga-hub/microservices/services/catalog"
-	"github.com/airlangga-hub/microservices/services/order/pb"
+	accpb "github.com/airlangga-hub/microservices/order/account_pb"
+	catpb "github.com/airlangga-hub/microservices/order/catalog_pb"
+	"github.com/airlangga-hub/microservices/order/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Server struct {
 	pb.UnimplementedOrderServiceServer
 	Svc           Service
-	AccountClient *account.Client
-	CatalogClient *catalog.Client
+	AccountClient accpb.AccountServiceClient
+	CatalogClient catpb.CatalogServiceClient
 }
 
 func ListenGrpc(service Service, port string) error {
-	accountClient, err := account.NewClient()
+	accountConn, err := grpc.NewClient("account:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return fmt.Errorf("ERROR: order server ListenGrpc (account.NewClient): %v", err)
+		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
 	}
-	defer accountClient.Conn.Close()
+	defer accountConn.Close()
 
-	catalogClient, err := catalog.NewClient()
+	accountClient := accpb.NewAccountServiceClient(accountConn)
+
+	catalogConn, err := grpc.NewClient("catalog:9091", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return fmt.Errorf("ERROR: order server ListenGrpc (catalog.NewClient): %v", err)
+		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
 	}
-	defer catalogClient.Conn.Close()
+	defer catalogConn.Close()
+
+	catalogClient := catpb.NewCatalogServiceClient(catalogConn)
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
@@ -53,7 +58,7 @@ func ListenGrpc(service Service, port string) error {
 }
 
 func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.PostOrderResponse, error) {
-	_, err := s.AccountClient.GetAccount(ctx, r.AccountId)
+	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{Id: r.AccountId})
 	if err != nil {
 		return nil, err
 	}
@@ -68,10 +73,12 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 
 	products, err := s.CatalogClient.GetProducts(
 		ctx,
-		"",
-		productIDs,
-		0,
-		0,
+		&catpb.GetProductsRequest{
+			Offset: 0,
+			Limit:  0,
+			Ids:    productIDs,
+			Query:  "",
+		},
 	)
 	if err != nil {
 		return nil, err
@@ -79,12 +86,12 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 
 	orderedProducts := []OrderedProduct{}
 
-	for _, p := range products {
-		if qty, exist := mapIdQty[p.ID]; exist {
+	for _, p := range products.Products {
+		if qty, exist := mapIdQty[p.Id]; exist {
 			orderedProducts = append(
 				orderedProducts,
 				OrderedProduct{
-					ID:          p.ID,
+					ID:          p.Id,
 					Name:        p.Name,
 					Description: p.Description,
 					Price:       p.Price,
@@ -137,13 +144,13 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 }
 
 func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAccountIDRequest) (*pb.GetOrdersByAccountIDResponse, error) {
-	_, err := s.AccountClient.GetAccount(ctx, r.AccountId)
+	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{Id: r.AccountId})
 	if err != nil {
 		return nil, err
 	}
 
 	// the products inside each order only contains product_id and quantity
-	// we need to get the name, description, price from catalog
+	// we need to get the name, description, price from catpb
 	orders, err := s.Svc.GetOrdersByAccountID(ctx, r.AccountId)
 	if err != nil {
 		return nil, err
@@ -167,19 +174,21 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 
 	catalogProducts, err := s.CatalogClient.GetProducts(
 		ctx,
-		"",
-		productIDs,
-		0,
-		0,
+		&catpb.GetProductsRequest{
+			Offset: 0,
+			Limit:  0,
+			Ids:    productIDs,
+			Query:  "",
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	mapCatalogProducts := map[string]catalog.Product{}
+	mapCatalogProducts := map[string]*catpb.Product{}
 
-	for _, cp := range catalogProducts {
-		mapCatalogProducts[cp.ID] = cp
+	for _, cp := range catalogProducts.Products {
+		mapCatalogProducts[cp.Id] = cp
 	}
 
 	pbOrders := []*pb.Order{}
@@ -194,7 +203,7 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 				pbProducts = append(
 					pbProducts,
 					&pb.OrderedProduct{
-						Id:          cp.ID,
+						Id:          cp.Id,
 						Name:        cp.Name,
 						Description: cp.Description,
 						Price:       cp.Price,
@@ -206,13 +215,13 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 
 		if len(order.Products) != len(pbProducts) {
 			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
-			return nil, errors.New("error finding account's order")
+			return nil, errors.New("error finding accpb's order")
 		}
 
 		createdAt, err := order.CreatedAt.MarshalBinary()
 		if err != nil {
 			log.Println("ERROR: order server GetOrdersByAccountID (MarshalBinary): ", err)
-			return nil, errors.New("error finding account's order")
+			return nil, errors.New("error finding accpb's order")
 		}
 
 		pbOrders = append(
