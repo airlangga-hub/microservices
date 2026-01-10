@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	accpb "github.com/airlangga-hub/microservices/order/account_pb"
 	catpb "github.com/airlangga-hub/microservices/order/catalog_pb"
@@ -22,7 +23,7 @@ type Server struct {
 }
 
 func ListenGrpc(service Service, port string) error {
-	accountConn, err := grpc.NewClient("account:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	accountConn, err := grpc.NewClient(os.Getenv("ACCOUNT_SERVICE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
 	}
@@ -30,7 +31,7 @@ func ListenGrpc(service Service, port string) error {
 
 	accountClient := accpb.NewAccountServiceClient(accountConn)
 
-	catalogConn, err := grpc.NewClient("catalog:9091", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	catalogConn, err := grpc.NewClient(os.Getenv("CATALOG_SERVICE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
 	}
