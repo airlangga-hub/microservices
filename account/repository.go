@@ -12,8 +12,7 @@ import (
 type Repository interface {
 	Close() error
 	CreateAccount(ctx context.Context, a Account) (Account, error)
-	GetAccountByID(ctx context.Context, id int32) (Account, error)
-	ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error)
+	GetAccountByEmail(ctx context.Context, email string) (Account, error)
 }
 
 type repository struct {
@@ -78,45 +77,4 @@ func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, err
 	}
 
 	return account, nil
-}
-
-func (r *repository) ListAccounts(ctx context.Context, offset, limit int32) ([]Account, error) {
-	rows, err := r.db.QueryContext(
-		ctx,
-		`SELECT
-			id,
-			name
-		FROM accounts
-		ORDER BY id DESC
-		OFFSET $1
-		LIMIT $2;`,
-		offset,
-		limit)
-	if err != nil {
-		log.Println("ERROR: account repo ListAccounts (r.db.QueryContext): ", err)
-		return nil, errors.New("error listing accounts")
-	}
-
-	defer rows.Close()
-
-	accounts := []Account{}
-
-	for rows.Next() {
-		a := Account{}
-		if err := rows.Scan(
-			&a.ID,
-			&a.Name,
-		); err != nil {
-			log.Println("ERROR: account repo ListAccounts (rows.Scan): ", err)
-			return nil, errors.New("error scanning current row")
-		}
-		accounts = append(accounts, a)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Println("ERROR: account repo ListAccounts (rows.Err): ", err)
-		return nil, errors.New("error iterating rows")
-	}
-
-	return accounts, nil
 }

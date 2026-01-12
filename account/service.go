@@ -4,11 +4,6 @@ import (
 	"context"
 )
 
-type Account struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
-}
-
 type Service interface {
 	PostAccount(ctx context.Context, name string) (Account, error)
 	GetAccount(ctx context.Context, id int32) (Account, error)
