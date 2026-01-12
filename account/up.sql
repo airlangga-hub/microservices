@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS accounts(
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
+    email TEXT NOT NULL,
+    hashed_password TEXT NOT NULL
 );
