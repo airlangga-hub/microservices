@@ -27,8 +27,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountServiceClient interface {
-	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Account, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Account, error)
+	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Token, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
 }
 
 type accountServiceClient struct {
@@ -39,9 +39,9 @@ func NewAccountServiceClient(cc grpc.ClientConnInterface) AccountServiceClient {
 	return &accountServiceClient{cc}
 }
 
-func (c *accountServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Account, error) {
+func (c *accountServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Token, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Account)
+	out := new(Token)
 	err := c.cc.Invoke(ctx, AccountService_SignUp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -49,9 +49,9 @@ func (c *accountServiceClient) SignUp(ctx context.Context, in *SignUpRequest, op
 	return out, nil
 }
 
-func (c *accountServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Account, error) {
+func (c *accountServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Account)
+	out := new(Token)
 	err := c.cc.Invoke(ctx, AccountService_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -63,8 +63,8 @@ func (c *accountServiceClient) Login(ctx context.Context, in *LoginRequest, opts
 // All implementations must embed UnimplementedAccountServiceServer
 // for forward compatibility.
 type AccountServiceServer interface {
-	SignUp(context.Context, *SignUpRequest) (*Account, error)
-	Login(context.Context, *LoginRequest) (*Account, error)
+	SignUp(context.Context, *SignUpRequest) (*Token, error)
+	Login(context.Context, *LoginRequest) (*Token, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }
 
@@ -75,10 +75,10 @@ type AccountServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAccountServiceServer struct{}
 
-func (UnimplementedAccountServiceServer) SignUp(context.Context, *SignUpRequest) (*Account, error) {
+func (UnimplementedAccountServiceServer) SignUp(context.Context, *SignUpRequest) (*Token, error) {
 	return nil, status.Error(codes.Unimplemented, "method SignUp not implemented")
 }
-func (UnimplementedAccountServiceServer) Login(context.Context, *LoginRequest) (*Account, error) {
+func (UnimplementedAccountServiceServer) Login(context.Context, *LoginRequest) (*Token, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAccountServiceServer) mustEmbedUnimplementedAccountServiceServer() {}

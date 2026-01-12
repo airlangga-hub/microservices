@@ -2,10 +2,8 @@ syntax = "proto3";
 package pb;
 option go_package = "github.com/airlangga-hub/microservices/services/account/pb";
 
-message Account {
-    int32 id = 1;
-    string email = 2;
-    string password = 3;
+message Token {
+    string jwt = 1;
 }
 
 message SignUpRequest {
@@ -19,6 +17,6 @@ message LoginRequest {
 }
 
 service AccountService {
-    rpc SignUp(SignUpRequest) returns (Account);
-    rpc Login(LoginRequest) returns (Account);
+    rpc SignUp(SignUpRequest) returns (Token);
+    rpc Login(LoginRequest) returns (Token);
 }

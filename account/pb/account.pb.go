@@ -21,29 +21,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Account struct {
+type Token struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Jwt           string                 `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Account) Reset() {
-	*x = Account{}
+func (x *Token) Reset() {
+	*x = Token{}
 	mi := &file_account_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Account) String() string {
+func (x *Token) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Account) ProtoMessage() {}
+func (*Token) ProtoMessage() {}
 
-func (x *Account) ProtoReflect() protoreflect.Message {
+func (x *Token) ProtoReflect() protoreflect.Message {
 	mi := &file_account_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,28 +53,14 @@ func (x *Account) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Account.ProtoReflect.Descriptor instead.
-func (*Account) Descriptor() ([]byte, []int) {
+// Deprecated: Use Token.ProtoReflect.Descriptor instead.
+func (*Token) Descriptor() ([]byte, []int) {
 	return file_account_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Account) GetId() int32 {
+func (x *Token) GetJwt() string {
 	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *Account) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *Account) GetPassword() string {
-	if x != nil {
-		return x.Password
+		return x.Jwt
 	}
 	return ""
 }
@@ -189,20 +173,18 @@ var File_account_proto protoreflect.FileDescriptor
 
 const file_account_proto_rawDesc = "" +
 	"\n" +
-	"\raccount.proto\x12\x02pb\"K\n" +
-	"\aAccount\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x03 \x01(\tR\bpassword\"A\n" +
+	"\raccount.proto\x12\x02pb\"\x19\n" +
+	"\x05Token\x12\x10\n" +
+	"\x03jwt\x18\x01 \x01(\tR\x03jwt\"A\n" +
 	"\rSignUpRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2b\n" +
-	"\x0eAccountService\x12(\n" +
-	"\x06SignUp\x12\x11.pb.SignUpRequest\x1a\v.pb.Account\x12&\n" +
-	"\x05Login\x12\x10.pb.LoginRequest\x1a\v.pb.AccountB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
+	"\bpassword\x18\x02 \x01(\tR\bpassword2^\n" +
+	"\x0eAccountService\x12&\n" +
+	"\x06SignUp\x12\x11.pb.SignUpRequest\x1a\t.pb.Token\x12$\n" +
+	"\x05Login\x12\x10.pb.LoginRequest\x1a\t.pb.TokenB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
 
 var (
 	file_account_proto_rawDescOnce sync.Once
@@ -218,15 +200,15 @@ func file_account_proto_rawDescGZIP() []byte {
 
 var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_account_proto_goTypes = []any{
-	(*Account)(nil),       // 0: pb.Account
+	(*Token)(nil),         // 0: pb.Token
 	(*SignUpRequest)(nil), // 1: pb.SignUpRequest
 	(*LoginRequest)(nil),  // 2: pb.LoginRequest
 }
 var file_account_proto_depIdxs = []int32{
 	1, // 0: pb.AccountService.SignUp:input_type -> pb.SignUpRequest
 	2, // 1: pb.AccountService.Login:input_type -> pb.LoginRequest
-	0, // 2: pb.AccountService.SignUp:output_type -> pb.Account
-	0, // 3: pb.AccountService.Login:output_type -> pb.Account
+	0, // 2: pb.AccountService.SignUp:output_type -> pb.Token
+	0, // 3: pb.AccountService.Login:output_type -> pb.Token
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
