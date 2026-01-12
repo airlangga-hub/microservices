@@ -1,7 +1,7 @@
 services:
   account:
     build:
-      context: ./services/account
+      context: ./account
       dockerfile: app.dockerfile
     depends_on:
       - account_db
@@ -14,7 +14,7 @@ services:
 
   catalog:
     build:
-      context: ./services/catalog
+      context: ./catalog
       dockerfile: app.dockerfile
     depends_on:
       - elasticsearch
@@ -27,7 +27,7 @@ services:
 
   order:
     build:
-      context: ./services/order
+      context: ./order
       dockerfile: app.dockerfile
     depends_on:
       - order_db
