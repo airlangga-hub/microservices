@@ -15,6 +15,7 @@ import (
 func main() {
 	dbUrl := os.Getenv("ACCOUNT_DB_URL")
 	port := os.Getenv("ACCOUNT_PORT")
+	secret := os.Getenv("JWT_SECRET")
 
 	repository, err := NewRepository(dbUrl)
 	if err != nil {
@@ -22,7 +23,7 @@ func main() {
 	}
 	defer repository.Close()
 
-	service := NewService(repository)
+	service := NewService(repository, []byte(secret))
 
 	s := grpc.NewServer()
 	pb.RegisterAccountServiceServer(s, &Server{Svc: service})
