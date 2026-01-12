@@ -4,36 +4,21 @@ option go_package = "github.com/airlangga-hub/microservices/services/account/pb"
 
 message Account {
     int32 id = 1;
-    string name = 2;
+    string email = 2;
+    string password = 3;
 }
 
-message PostAccountRequest {
-    string name = 1;
+message SignUpRequest {
+    string email = 1;
+    string password = 2;
 }
 
-message PostAccountResponse {
-    Account account = 1;
-}
-
-message GetAccountRequest {
-    int32 id = 1;
-}
-
-message GetAccountResponse {
-    Account account = 1;
-}
-
-message GetAccountsRequest {
-    int32 offset = 1;
-    int32 limit = 2;
-}
-
-message GetAccountsResponse {
-    repeated Account accounts = 1;
+message LoginRequest {
+    string email = 1;
+    string password = 2;
 }
 
 service AccountService {
-    rpc PostAccount(PostAccountRequest) returns (PostAccountResponse);
-    rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
-    rpc GetAccounts(GetAccountsRequest) returns (GetAccountsResponse);
+    rpc SignUp(SignUpRequest) returns (Account);
+    rpc Login(LoginRequest) returns (Account);
 }

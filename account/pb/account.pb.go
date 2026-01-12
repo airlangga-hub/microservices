@@ -24,7 +24,8 @@ const (
 type Account struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -66,34 +67,42 @@ func (x *Account) GetId() int32 {
 	return 0
 }
 
-func (x *Account) GetName() string {
+func (x *Account) GetEmail() string {
 	if x != nil {
-		return x.Name
+		return x.Email
 	}
 	return ""
 }
 
-type PostAccountRequest struct {
+func (x *Account) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type SignUpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PostAccountRequest) Reset() {
-	*x = PostAccountRequest{}
+func (x *SignUpRequest) Reset() {
+	*x = SignUpRequest{}
 	mi := &file_account_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PostAccountRequest) String() string {
+func (x *SignUpRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PostAccountRequest) ProtoMessage() {}
+func (*SignUpRequest) ProtoMessage() {}
 
-func (x *PostAccountRequest) ProtoReflect() protoreflect.Message {
+func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_account_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -105,39 +114,47 @@ func (x *PostAccountRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PostAccountRequest.ProtoReflect.Descriptor instead.
-func (*PostAccountRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SignUpRequest.ProtoReflect.Descriptor instead.
+func (*SignUpRequest) Descriptor() ([]byte, []int) {
 	return file_account_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PostAccountRequest) GetName() string {
+func (x *SignUpRequest) GetEmail() string {
 	if x != nil {
-		return x.Name
+		return x.Email
 	}
 	return ""
 }
 
-type PostAccountResponse struct {
+func (x *SignUpRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type LoginRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PostAccountResponse) Reset() {
-	*x = PostAccountResponse{}
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
 	mi := &file_account_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PostAccountResponse) String() string {
+func (x *LoginRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PostAccountResponse) ProtoMessage() {}
+func (*LoginRequest) ProtoMessage() {}
 
-func (x *PostAccountResponse) ProtoReflect() protoreflect.Message {
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_account_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -149,228 +166,43 @@ func (x *PostAccountResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PostAccountResponse.ProtoReflect.Descriptor instead.
-func (*PostAccountResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
 	return file_account_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *PostAccountResponse) GetAccount() *Account {
+func (x *LoginRequest) GetEmail() string {
 	if x != nil {
-		return x.Account
+		return x.Email
 	}
-	return nil
+	return ""
 }
 
-type GetAccountRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetAccountRequest) Reset() {
-	*x = GetAccountRequest{}
-	mi := &file_account_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetAccountRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAccountRequest) ProtoMessage() {}
-
-func (x *GetAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_account_proto_msgTypes[3]
+func (x *LoginRequest) GetPassword() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.Password
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAccountRequest.ProtoReflect.Descriptor instead.
-func (*GetAccountRequest) Descriptor() ([]byte, []int) {
-	return file_account_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *GetAccountRequest) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-type GetAccountResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetAccountResponse) Reset() {
-	*x = GetAccountResponse{}
-	mi := &file_account_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetAccountResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAccountResponse) ProtoMessage() {}
-
-func (x *GetAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_account_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAccountResponse.ProtoReflect.Descriptor instead.
-func (*GetAccountResponse) Descriptor() ([]byte, []int) {
-	return file_account_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *GetAccountResponse) GetAccount() *Account {
-	if x != nil {
-		return x.Account
-	}
-	return nil
-}
-
-type GetAccountsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Offset        int32                  `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetAccountsRequest) Reset() {
-	*x = GetAccountsRequest{}
-	mi := &file_account_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetAccountsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAccountsRequest) ProtoMessage() {}
-
-func (x *GetAccountsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_account_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAccountsRequest.ProtoReflect.Descriptor instead.
-func (*GetAccountsRequest) Descriptor() ([]byte, []int) {
-	return file_account_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *GetAccountsRequest) GetOffset() int32 {
-	if x != nil {
-		return x.Offset
-	}
-	return 0
-}
-
-func (x *GetAccountsRequest) GetLimit() int32 {
-	if x != nil {
-		return x.Limit
-	}
-	return 0
-}
-
-type GetAccountsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Accounts      []*Account             `protobuf:"bytes,1,rep,name=accounts,proto3" json:"accounts,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetAccountsResponse) Reset() {
-	*x = GetAccountsResponse{}
-	mi := &file_account_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetAccountsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAccountsResponse) ProtoMessage() {}
-
-func (x *GetAccountsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_account_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAccountsResponse.ProtoReflect.Descriptor instead.
-func (*GetAccountsResponse) Descriptor() ([]byte, []int) {
-	return file_account_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *GetAccountsResponse) GetAccounts() []*Account {
-	if x != nil {
-		return x.Accounts
-	}
-	return nil
+	return ""
 }
 
 var File_account_proto protoreflect.FileDescriptor
 
 const file_account_proto_rawDesc = "" +
 	"\n" +
-	"\raccount.proto\x12\x02pb\"-\n" +
+	"\raccount.proto\x12\x02pb\"K\n" +
 	"\aAccount\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"(\n" +
-	"\x12PostAccountRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"<\n" +
-	"\x13PostAccountResponse\x12%\n" +
-	"\aaccount\x18\x01 \x01(\v2\v.pb.AccountR\aaccount\"#\n" +
-	"\x11GetAccountRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\";\n" +
-	"\x12GetAccountResponse\x12%\n" +
-	"\aaccount\x18\x01 \x01(\v2\v.pb.AccountR\aaccount\"B\n" +
-	"\x12GetAccountsRequest\x12\x16\n" +
-	"\x06offset\x18\x01 \x01(\x05R\x06offset\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\">\n" +
-	"\x13GetAccountsResponse\x12'\n" +
-	"\baccounts\x18\x01 \x03(\v2\v.pb.AccountR\baccounts2\xcd\x01\n" +
-	"\x0eAccountService\x12>\n" +
-	"\vPostAccount\x12\x16.pb.PostAccountRequest\x1a\x17.pb.PostAccountResponse\x12;\n" +
-	"\n" +
-	"GetAccount\x12\x15.pb.GetAccountRequest\x1a\x16.pb.GetAccountResponse\x12>\n" +
-	"\vGetAccounts\x12\x16.pb.GetAccountsRequest\x1a\x17.pb.GetAccountsResponseB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x03 \x01(\tR\bpassword\"A\n" +
+	"\rSignUpRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"@\n" +
+	"\fLoginRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword2b\n" +
+	"\x0eAccountService\x12(\n" +
+	"\x06SignUp\x12\x11.pb.SignUpRequest\x1a\v.pb.Account\x12&\n" +
+	"\x05Login\x12\x10.pb.LoginRequest\x1a\v.pb.AccountB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
 
 var (
 	file_account_proto_rawDescOnce sync.Once
@@ -384,31 +216,22 @@ func file_account_proto_rawDescGZIP() []byte {
 	return file_account_proto_rawDescData
 }
 
-var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_account_proto_goTypes = []any{
-	(*Account)(nil),             // 0: pb.Account
-	(*PostAccountRequest)(nil),  // 1: pb.PostAccountRequest
-	(*PostAccountResponse)(nil), // 2: pb.PostAccountResponse
-	(*GetAccountRequest)(nil),   // 3: pb.GetAccountRequest
-	(*GetAccountResponse)(nil),  // 4: pb.GetAccountResponse
-	(*GetAccountsRequest)(nil),  // 5: pb.GetAccountsRequest
-	(*GetAccountsResponse)(nil), // 6: pb.GetAccountsResponse
+	(*Account)(nil),       // 0: pb.Account
+	(*SignUpRequest)(nil), // 1: pb.SignUpRequest
+	(*LoginRequest)(nil),  // 2: pb.LoginRequest
 }
 var file_account_proto_depIdxs = []int32{
-	0, // 0: pb.PostAccountResponse.account:type_name -> pb.Account
-	0, // 1: pb.GetAccountResponse.account:type_name -> pb.Account
-	0, // 2: pb.GetAccountsResponse.accounts:type_name -> pb.Account
-	1, // 3: pb.AccountService.PostAccount:input_type -> pb.PostAccountRequest
-	3, // 4: pb.AccountService.GetAccount:input_type -> pb.GetAccountRequest
-	5, // 5: pb.AccountService.GetAccounts:input_type -> pb.GetAccountsRequest
-	2, // 6: pb.AccountService.PostAccount:output_type -> pb.PostAccountResponse
-	4, // 7: pb.AccountService.GetAccount:output_type -> pb.GetAccountResponse
-	6, // 8: pb.AccountService.GetAccounts:output_type -> pb.GetAccountsResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 0: pb.AccountService.SignUp:input_type -> pb.SignUpRequest
+	2, // 1: pb.AccountService.Login:input_type -> pb.LoginRequest
+	0, // 2: pb.AccountService.SignUp:output_type -> pb.Account
+	0, // 3: pb.AccountService.Login:output_type -> pb.Account
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_account_proto_init() }
@@ -422,7 +245,7 @@ func file_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_account_proto_rawDesc), len(file_account_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
