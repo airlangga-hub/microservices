@@ -11,36 +11,20 @@ type Server struct {
 	Svc Service
 }
 
-func (s *Server) PostAccount(ctx context.Context, r *pb.PostAccountRequest) (*pb.PostAccountResponse, error) {
-	account, err := s.Svc.PostAccount(ctx, r.Name)
+func (s *Server) SignUp(ctx context.Context, r *pb.SignUpRequest) (*pb.PostAccountResponse, error) {
+	account, err := s.Svc.SignUp(ctx, r.Email, r.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.PostAccountResponse{Account: &pb.Account{Id: account.ID, Name: account.Name}}, nil
+	return &pb.Account{Email: account.Email, }, nil
 }
 
-func (s *Server) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.GetAccountResponse, error) {
+func (s *Server) Login(ctx context.Context, r *pb.GetAccountRequest) (*pb.GetAccountResponse, error) {
 	account, err := s.Svc.GetAccount(ctx, r.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.GetAccountResponse{Account: &pb.Account{Id: account.ID, Name: account.Name}}, nil
-}
-
-func (s *Server) GetAccounts(ctx context.Context, r *pb.GetAccountsRequest) (*pb.GetAccountsResponse, error) {
-	accounts, err := s.Svc.GetAccounts(ctx, r.Offset, r.Limit)
-	if err != nil {
-		return nil, err
-	}
-
-	a := []*pb.Account{}
-
-	for _, account := range accounts {
-		pbAccount := &pb.Account{Id: account.ID, Name: account.Name}
-		a = append(a, pbAccount)
-	}
-
-	return &pb.GetAccountsResponse{Accounts: a}, nil
 }
