@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	Close() error
-	CreateAccount(ctx context.Context, a Account) (Account, error)
+	CreateAccount(ctx context.Context, email, hashedPassword string) (Account, error)
 	GetAccountByEmail(ctx context.Context, email string) (Account, error)
 }
 
@@ -42,14 +42,18 @@ func (r *repository) Close() error {
 	return nil
 }
 
-func (r *repository) CreateAccount(ctx context.Context, a Account) (Account, error) {
+func (r *repository) CreateAccount(ctx context.Context, email, hashedPassword string) (Account, error) {
+	a := Account{}
+
 	if err := r.db.QueryRowContext(
 		ctx,
-		`INSERT INTO accounts (name)
-		VALUES ($1)
-		RETURNING id;`,
-		a.Name,
-	).Scan(&a.ID); err != nil {
+		`INSERT INTO accounts
+		(email, hashed_password)
+		VALUES
+		($1, $2)
+		RETURNING id, email, hashed_password;`,
+		email, hashedPassword,
+	).Scan(&a.ID, &a.Email, a.HashedPassword); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
 		return Account{}, errors.New("error creating account")
 	}
@@ -57,23 +61,25 @@ func (r *repository) CreateAccount(ctx context.Context, a Account) (Account, err
 	return a, nil
 }
 
-func (r *repository) GetAccountByID(ctx context.Context, id int32) (Account, error) {
+func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Account, error) {
 	account := Account{}
 
 	if err := r.db.QueryRowContext(
 		ctx,
 		`SELECT
 			id,
-			name
+			email,
+			hashed_password
 		FROM accounts
-		WHERE id = $1;`,
-		id,
+		WHERE email = $1;`,
+		email,
 	).Scan(
 		&account.ID,
-		&account.Name,
+		&account.Email,
+		&account.HashedPassword,
 	); err != nil {
-		log.Println("ERROR: account repo GetAccountByID: ", err)
-		return Account{}, errors.New("error finding account")
+		log.Println("ERROR: account repo GetAccountByEmail: ", err)
+		return Account{}, errors.New("unauthorized user")
 	}
 
 	return account, nil
