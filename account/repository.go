@@ -68,13 +68,15 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 		ctx,
 		`SELECT
 			id,
-			email
+			email,
+			hashed_password
 		FROM accounts
 		WHERE email = $1;`,
 		email,
 	).Scan(
 		&account.ID,
 		&account.Email,
+		&account.HashedPassword,
 	); err != nil {
 		log.Println("ERROR: account repo GetAccountByEmail: ", err)
 		return Account{}, errors.New("unauthorized user")
