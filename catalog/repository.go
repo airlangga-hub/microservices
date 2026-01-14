@@ -37,6 +37,7 @@ type productDocument struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Price       int64  `json:"price"`
+	SellerID    int32  `json:"seller_id"`
 }
 
 const ESIndex = "catalog"
@@ -52,11 +53,11 @@ type ESresponse struct {
 
 func NewRepository() (Repository, error) {
 	esUrl := os.Getenv("ELASTICSEARCH_URL")
-	
+
 	cfg := elasticsearch.Config{
 		Addresses: []string{esUrl},
 	}
-	
+
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {
 		log.Println("ERROR: catalog repo NewRepository: ", err)
@@ -80,7 +81,7 @@ func (r *repository) Close(ctx context.Context) error {
 		log.Println("ERROR: catalog repo Close: ", err)
 		return errors.New("error closing elastic search client")
 	}
-	
+
 	return nil
 }
 
