@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -13,6 +14,47 @@ func (cfg *Config) GetProducts(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	res, err := cfg.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	products := make([]Product, len(res.Products))
+
+	for i, product := range res.Products {
+		products[i] = Product{
+			ID:          product.Id,
+			Name:        product.Name,
+			Description: product.Description,
+			Price:       product.Price,
+		}
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		struct {
+			Products []Product
+		}{
+			Products: products,
+		},
+	)
+}
+
+func (cfg *Config) SearchProducts(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
+
+	var request struct {
+		Query string `json:"query"`
+	}
+	
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	res, err := cfg.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{Query: request.Query})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

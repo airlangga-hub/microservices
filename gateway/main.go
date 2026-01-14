@@ -67,6 +67,7 @@ func main() {
 	http.HandleFunc("POST /api/signup", cfg.SignUp)
 	http.HandleFunc("POST /api/login", cfg.Login)
 	http.HandleFunc("GET /api/products", cfg.GetProducts)
+	http.HandleFunc("GET /api/products/search", cfg.SearchProducts)
 	// buyer endpoints
 	http.Handle("POST /api/order", cfg.AuthorizeMiddleware(http.HandlerFunc(cfg.CreateOrder)))
 	// seller endpoints
