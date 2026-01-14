@@ -1,18 +1,39 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
+
+	accpb "github.com/airlangga-hub/microservices/gateway/account_pb"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-var jwtSecret []byte
+type Config struct {
+	Secret        []byte
+	AccountClient accpb.AccountServiceClient
+}
 
 func main() {
 	secret := os.Getenv("JWT_SECRET")
-	jwtSecret = []byte(secret)
+	jwtSecret := []byte(secret)
+
+	accountConn, err := grpc.NewClient("account:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("FATAL: failed to create accountConn")
+	}
+	defer accountConn.Close()
+
+	accountClient := accpb.NewAccountServiceClient(accountConn)
+
+	cfg := Config{
+		Secret:        jwtSecret,
+		AccountClient: accountClient,
+	}
 
 	// public endpoints
-	http.HandleFunc("POST /api/signup", SignUp)
+	http.HandleFunc("POST /api/signup", cfg.SignUp)
 	// buyer endpoints
 	// seller endpoints
 }

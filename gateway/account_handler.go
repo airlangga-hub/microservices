@@ -1,7 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func SignUp(w http.ResponseWriter, r *http.Request) {
-	
+func (cfg *Config) SignUp(w http.ResponseWriter, r *http.Request) {
+	res, err := accountClient.SignUp()
 }
