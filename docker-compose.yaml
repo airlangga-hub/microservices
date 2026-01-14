@@ -6,7 +6,7 @@ services:
     depends_on:
       - account_db
     environment:
-      ACCOUNT_DB_URL: postgres://angga:123456@account_db:5432/angga?sslmode=disable
+      ACCOUNT_DB_URL: postgres://pgdb:123456@account_db:5432/pgdb?sslmode=disable
       ACCOUNT_PORT: :9090
     ports:
       - "9090:9090"
@@ -32,7 +32,7 @@ services:
     depends_on:
       - order_db
     environment:
-      DATABASE_URL: postgres://angga:123456@order_db:5432/angga?sslmode=disable
+      DATABASE_URL: postgres://pgdb:123456@order_db:5432/pgdb?sslmode=disable
       ORDER_PORT: :9092
       ACCOUNT_SERVICE_URL: account:9090
       CATALOG_SERVICE_URL: catalog:9091
@@ -43,8 +43,8 @@ services:
   account_db:
     image: postgres:15
     environment:
-      POSTGRES_DB: angga
-      POSTGRES_USER: angga
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: pgdb
       POSTGRES_PASSWORD: 123456
     volumes:
       - account_pgdata:/var/lib/postgresql/data
@@ -64,8 +64,8 @@ services:
   order_db:
     image: postgres:15
     environment:
-      POSTGRES_DB: angga
-      POSTGRES_USER: angga
+      POSTGRES_DB: pgdb
+      POSTGRES_USER: pgdb
       POSTGRES_PASSWORD: 123456
     volumes:
       - order_pgdata:/var/lib/postgresql/data
