@@ -6,13 +6,14 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func MakeJWT(userType, email string, secret []byte) (string, error) {
+func MakeJWT(userID int32, userType, email string, secret []byte) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"exp":       time.Now().Add(time.Hour * 24),
 			"sub":       email,
 			"user_type": userType,
+			"user_id":   userID,
 		},
 	)
 
@@ -23,4 +24,3 @@ func MakeJWT(userType, email string, secret []byte) (string, error) {
 
 	return tokenStr, nil
 }
-

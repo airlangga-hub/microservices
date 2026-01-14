@@ -51,9 +51,9 @@ func (r *repository) CreateAccount(ctx context.Context, email, hashedPassword st
 		(email, hashed_password)
 		VALUES
 		($1, $2)
-		RETURNING email, type;`,
+		RETURNING id, email, type;`,
 		email, hashedPassword,
-	).Scan(&a.Email, &a.Type); err != nil {
+	).Scan(&a.ID, &a.Email, &a.Type); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
 		return Account{}, errors.New("error creating account")
 	}
@@ -67,6 +67,7 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 	if err := r.db.QueryRowContext(
 		ctx,
 		`SELECT
+			id,
 			email,
 			hashed_password,
 			type
@@ -74,6 +75,7 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 		WHERE email = $1;`,
 		email,
 	).Scan(
+		&account.ID,
 		&account.Email,
 		&account.HashedPassword,
 		&account.Type,
