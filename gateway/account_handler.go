@@ -25,7 +25,7 @@ func (cfg *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	res, err := cfg.AccountClient.SignUp(ctx, &accpb.SignUpRequest{Email: request.Email, Password: request.Password})
 	if err != nil {
-		http.Error(w, "failed to sign up", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -58,19 +58,17 @@ func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
 
 	res, err := cfg.AccountClient.Login(ctx, &accpb.LoginRequest{Email: request.Email, Password: request.Password})
 	if err != nil {
-		http.Error(w, "failed to login", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	response := struct {
-		Token string `json:"token"`
-	}{
-		Token: res.Jwt,
 	}
 
 	respondWithJSON(
 		w,
 		http.StatusOK,
-		response,
+		struct {
+			Token string `json:"token"`
+		}{
+			Token: res.Jwt,
+		},
 	)
 }
