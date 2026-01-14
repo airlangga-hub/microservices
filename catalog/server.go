@@ -44,7 +44,7 @@ func (s *Server) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.G
 }
 
 func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
-	products := []Product{}
+	var products []Product
 	var err error
 
 	if r.Query != "" {
@@ -59,18 +59,15 @@ func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb
 		return nil, err
 	}
 
-	pbProducts := []*pb.Product{}
+	pbProducts := make([]*pb.Product, len(products))
 
-	for _, p := range products {
-		pbProducts = append(
-			pbProducts,
-			&pb.Product{
-				Id:          p.ID,
-				Name:        p.Name,
-				Description: p.Description,
-				Price:       p.Price,
-			},
-		)
+	for i, p := range products {
+		pbProducts[i] = &pb.Product{
+			Id:          p.ID,
+			Name:        p.Name,
+			Description: p.Description,
+			Price:       p.Price,
+		}
 	}
 
 	return &pb.GetProductsResponse{

@@ -140,7 +140,7 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 
 	defer rows.Close()
 
-	ordersMap := map[int32]*Order{}
+	ordersMap := make(map[int32]*Order)
 
 	for rows.Next() {
 		var (
@@ -193,7 +193,7 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 		return nil, errors.New("error finding account's orders")
 	}
 
-	orders := []*Order{}
+	orders := make([]*Order, 0, len(ordersMap))
 
 	for _, order := range ordersMap {
 		orders = append(orders, order)

@@ -199,11 +199,11 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 		return nil, errors.New("error decoding ListProducts response")
 	}
 
-	products := []Product{}
+	products := make([]Product, len(response.Hits.Hits))
 
-	for _, hit := range response.Hits.Hits {
+	for i, hit := range response.Hits.Hits {
 		hit.Source.ID = hit.ID
-		products = append(products, hit.Source)
+		products[i] = hit.Source
 	}
 
 	return products, nil
@@ -253,11 +253,11 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 		return nil, errors.New("error decoding products by IDs response")
 	}
 
-	products := []Product{}
+	products := make([]Product, len(response.Hits.Hits))
 
-	for _, hit := range response.Hits.Hits {
+	for i, hit := range response.Hits.Hits {
 		hit.Source.ID = hit.ID
-		products = append(products, hit.Source)
+		products[i] = hit.Source
 	}
 
 	return products, nil
@@ -306,11 +306,11 @@ func (r *repository) SearchProducts(ctx context.Context, query string, offset, l
 		return nil, errors.New("error decoding search results")
 	}
 
-	products := []Product{}
+	products := make([]Product, len(response.Hits.Hits))
 
-	for _, hit := range response.Hits.Hits {
+	for i, hit := range response.Hits.Hits {
 		hit.Source.ID = hit.ID
-		products = append(products, hit.Source)
+		products[i] = hit.Source
 	}
 
 	return products, nil

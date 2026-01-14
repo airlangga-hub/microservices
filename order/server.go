@@ -64,15 +64,15 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 		return nil, err
 	}
 
-	productIDs := []string{}
-	mapIdQty := map[string]int32{}
+	productIDs := make([]string, len(r.Products))
+	mapIdQty := make(map[string]int32)
 
-	for _, p := range r.Products {
-		productIDs = append(productIDs, p.Id)
+	for i, p := range r.Products {
+		productIDs[i] = p.Id
 		mapIdQty[p.Id] = p.Quantity
 	}
 
-	products, err := s.CatalogClient.GetProducts(
+	catalogRes, err := s.CatalogClient.GetProducts(
 		ctx,
 		&catpb.GetProductsRequest{
 			Offset: 0,
@@ -85,20 +85,17 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 		return nil, err
 	}
 
-	orderedProducts := []OrderedProduct{}
+	orderedProducts := make([]OrderedProduct, len(catalogRes.Products))
 
-	for _, p := range products.Products {
+	for i, p := range catalogRes.Products {
 		if qty, exist := mapIdQty[p.Id]; exist {
-			orderedProducts = append(
-				orderedProducts,
-				OrderedProduct{
-					ID:          p.Id,
-					Name:        p.Name,
-					Description: p.Description,
-					Price:       p.Price,
-					Quantity:    qty,
-				},
-			)
+			orderedProducts[i] = OrderedProduct{
+				ID:          p.Id,
+				Name:        p.Name,
+				Description: p.Description,
+				Price:       p.Price,
+				Quantity:    qty,
+			}
 		}
 	}
 
@@ -112,19 +109,17 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 		return nil, err
 	}
 
-	pbProducts := []*pb.OrderedProduct{}
+	pbProducts := make([]*pb.OrderedProduct, len(order.Products))
 
-	for _, p := range order.Products {
-		pbProducts = append(
-			pbProducts,
-			&pb.OrderedProduct{
-				Id:          p.ID,
-				Name:        p.Name,
-				Description: p.Description,
-				Price:       p.Price,
-				Quantity:    p.Quantity,
-			},
-		)
+	for i, p := range order.Products {
+		pbProducts[i] = &pb.OrderedProduct{
+			Id:          p.ID,
+			Name:        p.Name,
+			Description: p.Description,
+			Price:       p.Price,
+			Quantity:    p.Quantity,
+		}
+
 	}
 
 	createdAt, err := order.CreatedAt.MarshalBinary()
@@ -157,23 +152,21 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		return nil, err
 	}
 
-	productIdSet := map[string]struct{}{}
+	productIdSet := make(map[string]struct{})
 
 	for _, order := range orders {
 		for _, product := range order.Products {
-
 			productIdSet[product.ID] = struct{}{}
-
 		}
 	}
 
-	productIDs := []string{}
+	productIDs := make([]string, 0, len(productIdSet))
 
-	for productID, _ := range productIdSet {
+	for productID := range productIdSet {
 		productIDs = append(productIDs, productID)
 	}
 
-	catalogProducts, err := s.CatalogClient.GetProducts(
+	catalogRes, err := s.CatalogClient.GetProducts(
 		ctx,
 		&catpb.GetProductsRequest{
 			Offset: 0,
@@ -186,55 +179,46 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 		return nil, err
 	}
 
-	mapCatalogProducts := map[string]*catpb.Product{}
+	mapCatalogProducts := make(map[string]*catpb.Product)
 
-	for _, cp := range catalogProducts.Products {
+	for _, cp := range catalogRes.Products {
 		mapCatalogProducts[cp.Id] = cp
 	}
 
-	pbOrders := []*pb.Order{}
+	pbOrders := make([]*pb.Order, len(orders))
 
-	for _, order := range orders {
-
-		pbProducts := []*pb.OrderedProduct{}
-
-		for _, product := range order.Products {
+	for i, order := range orders {
+		pbProducts := make([]*pb.OrderedProduct, len(order.Products))
+		for i, product := range order.Products {
 			if cp, exist := mapCatalogProducts[product.ID]; exist {
-
-				pbProducts = append(
-					pbProducts,
-					&pb.OrderedProduct{
-						Id:          cp.Id,
-						Name:        cp.Name,
-						Description: cp.Description,
-						Price:       cp.Price,
-						Quantity:    product.Quantity,
-					},
-				)
+				pbProducts[i] = &pb.OrderedProduct{
+					Id:          cp.Id,
+					Name:        cp.Name,
+					Description: cp.Description,
+					Price:       cp.Price,
+					Quantity:    product.Quantity,
+				}
 			}
 		}
 
 		if len(order.Products) != len(pbProducts) {
 			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
-			return nil, errors.New("error finding accpb's order")
+			return nil, errors.New("failed to find orders")
 		}
 
 		createdAt, err := order.CreatedAt.MarshalBinary()
 		if err != nil {
 			log.Println("ERROR: order server GetOrdersByAccountID (MarshalBinary): ", err)
-			return nil, errors.New("error finding accpb's order")
+			return nil, errors.New("failed to find orders")
 		}
 
-		pbOrders = append(
-			pbOrders,
-			&pb.Order{
-				Id:         order.ID,
-				AccountId:  order.AccountID,
-				Products:   pbProducts,
-				TotalPrice: order.TotalPrice,
-				CreatedAt:  createdAt,
-			},
-		)
+		pbOrders[i] = &pb.Order{
+			Id:         order.ID,
+			AccountId:  order.AccountID,
+			Products:   pbProducts,
+			TotalPrice: order.TotalPrice,
+			CreatedAt:  createdAt,
+		}
 	}
 
 	return &pb.GetOrdersByAccountIDResponse{
