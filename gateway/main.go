@@ -34,6 +34,7 @@ func main() {
 
 	// public endpoints
 	http.HandleFunc("POST /api/signup", cfg.SignUp)
+	http.HandleFunc("POST /api/login", cfg.Login)
 	// buyer endpoints
 	// seller endpoints
 }
