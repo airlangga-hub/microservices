@@ -189,9 +189,9 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 
 	for i, order := range orders {
 		pbProducts := make([]*pb.OrderedProduct, len(order.Products))
-		for i, product := range order.Products {
+		for j, product := range order.Products {
 			if cp, exist := mapCatalogProducts[product.ID]; exist {
-				pbProducts[i] = &pb.OrderedProduct{
+				pbProducts[j] = &pb.OrderedProduct{
 					Id:          cp.Id,
 					Name:        cp.Name,
 					Description: cp.Description,

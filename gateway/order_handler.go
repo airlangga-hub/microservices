@@ -38,22 +38,22 @@ func (cfg *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	order, err := cfg.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
+	res, err := cfg.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	var t time.Time
-	if err := t.UnmarshalBinary(order.Order.CreatedAt); err != nil {
-		log.Println("ERROR CreateOrder (UnmarshalBinary): ", err)
+	if err := t.UnmarshalBinary(res.Order.CreatedAt); err != nil {
+		log.Println("ERROR gateway CreateOrder (UnmarshalBinary): ", err)
 		http.Error(w, "failed to create order", http.StatusInternalServerError)
 		return
 	}
 
-	products := make([]Product, len(order.Order.Products))
+	products := make([]Product, len(res.Order.Products))
 
-	for i, p := range order.Order.Products {
+	for i, p := range res.Order.Products {
 		products[i] = Product{
 			ID:          p.Id,
 			Name:        p.Name,
@@ -66,18 +66,69 @@ func (cfg *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(
 		w,
 		http.StatusCreated,
-		struct {
-			OrderID    int32     `json:"order_id"`
-			AccountID  int32     `json:"account_id"`
-			Products   []Product `json:"products"`
-			TotalPrice int64     `json:"total_price"`
-			CreatedAt  time.Time `json:"created_at"`
-		}{
-			OrderID:    order.Order.Id,
-			AccountID:  order.Order.AccountId,
+		Order{
+			ID:         res.Order.Id,
+			AccountID:  res.Order.AccountId,
 			Products:   products,
-			TotalPrice: order.Order.TotalPrice,
+			TotalPrice: res.Order.TotalPrice,
 			CreatedAt:  t,
+		},
+	)
+}
+
+func (cfg *Config) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
+
+	account, ok := r.Context().Value(accountKey).(Account)
+	if !ok {
+		http.Error(w, "unauthorized user", http.StatusUnauthorized)
+		return
+	}
+
+	res, err := cfg.OrderClient.GetOrdersByAccountID(ctx, &orderpb.GetOrdersByAccountIDRequest{AccountId: account.ID})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	orders := make([]*Order, len(res.Orders))
+
+	for i, o := range res.Orders {
+		products := make([]Product, len(o.Products))
+		for j, p := range o.Products {
+			products[j] = Product{
+				ID:          p.Id,
+				Name:        p.Name,
+				Description: p.Description,
+				Price:       p.Price,
+				Quantity:    p.Quantity,
+			}
+		}
+
+		var t time.Time
+		if err := t.UnmarshalBinary(o.CreatedAt); err != nil {
+			log.Println("ERROR gateway GetOrdersByAccountID (UnmarshalBinary): ", err)
+			http.Error(w, "some error happened", http.StatusInternalServerError)
+			return
+		}
+
+		orders[i] = &Order{
+			ID:         o.Id,
+			AccountID:  o.AccountId,
+			Products:   products,
+			TotalPrice: o.TotalPrice,
+			CreatedAt:  t,
+		}
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		struct {
+			Orders []*Order `json:"orders"`
+		}{
+			Orders: orders,
 		},
 	)
 }
