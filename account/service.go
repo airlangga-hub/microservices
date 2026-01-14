@@ -34,7 +34,7 @@ func (s *service) SignUp(ctx context.Context, email, password string) (string, e
 		return "", err
 	}
 
-	return MakeJWT(account.ID, account.Email, s.secret)
+	return MakeJWT(account.Type, account.Email, s.secret)
 }
 
 func (s *service) Login(ctx context.Context, email, password string) (string, error) {
@@ -52,5 +52,5 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 		return "", errors.New("incorrect password")
 	}
 
-	return MakeJWT(account.ID, account.Email, s.secret)
+	return MakeJWT(account.Type, account.Email, s.secret)
 }

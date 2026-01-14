@@ -8,13 +8,13 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func MakeJWT(id int32, email string, secret []byte) (string, error) {
+func MakeJWT(userType, email string, secret []byte) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"exp": time.Now().Add(time.Hour * 24),
-			"sub": email,
-			"id":  id,
+			"exp":       time.Now().Add(time.Hour * 24),
+			"sub":       email,
+			"user_type": userType,
 		},
 	)
 
@@ -51,7 +51,7 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 		return Account{}, errors.New("invalid token claims type")
 	}
 
-	id, ok := claims["id"].(int32)
+	userType, ok := claims["user_type"].(string)
 	if !ok {
 		return Account{}, errors.New("invalid token")
 	}
@@ -62,7 +62,7 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 	}
 
 	return Account{
-		ID:    id,
 		Email: email,
+		Type:  userType,
 	}, nil
 }
