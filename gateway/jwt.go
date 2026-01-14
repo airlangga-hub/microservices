@@ -37,12 +37,18 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 		return Account{}, errors.New("invalid token")
 	}
 
+	userID, ok := claims["user_id"].(int32)
+	if !ok {
+		return Account{}, errors.New("invalid token")
+	}
+
 	email, ok := claims["sub"].(string)
 	if !ok {
 		return Account{}, errors.New("invalid token")
 	}
 
 	return Account{
+		ID:    userID,
 		Email: email,
 		Type:  userType,
 	}, nil

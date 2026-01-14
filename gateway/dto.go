@@ -1,8 +1,9 @@
 package main
 
 type Account struct {
-	Email string `json:"email"`
-	Type  string `json:"type"`
+	ID    int32  `json:"id,omitempty"`
+	Email string `json:"email,omitempty"`
+	Type  string `json:"type,omitempty"`
 }
 
 type Product struct {
