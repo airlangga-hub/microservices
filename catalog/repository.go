@@ -106,7 +106,7 @@ func (r *repository) CreateProduct(ctx context.Context, p productDocument) (Prod
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
-		log.Printf("ERROR: catalog repo CreateProduct status=%d body=%s", res.StatusCode, body)
+		log.Printf("ERROR: catalog repo CreateProduct status=%d body=%s\n", res.StatusCode, body)
 		return Product{}, errors.New("error creating product in elastic search")
 	}
 
@@ -140,7 +140,7 @@ func (r *repository) GetProductByID(ctx context.Context, id string) (Product, er
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
-		log.Printf("ERROR: catalog repo GetProductByID status=%d body=%s", res.StatusCode, body)
+		log.Printf("ERROR: catalog repo GetProductByID status=%d body=%s\n", res.StatusCode, body)
 		return Product{}, errors.New("error getting product by id in elastic search")
 	}
 
@@ -187,7 +187,7 @@ func (r *repository) ListProducts(ctx context.Context, offset, limit int32) ([]P
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
-		log.Printf("ERROR: catalog repo ListProducts: status=%d, body=%s", res.StatusCode, body)
+		log.Printf("ERROR: catalog repo ListProducts: status=%d, body=%s\n", res.StatusCode, body)
 		return nil, errors.New("error listing products")
 	}
 
@@ -241,7 +241,7 @@ func (r *repository) ListProductsWithIDs(ctx context.Context, ids []string) ([]P
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
-		log.Printf("ERROR: catalog repo ListProductsWithIDs: status=%d, body=%s", res.StatusCode, body)
+		log.Printf("ERROR: catalog repo ListProductsWithIDs: status=%d, body=%s\n", res.StatusCode, body)
 		return nil, errors.New("error listing products by IDs")
 	}
 
@@ -294,7 +294,7 @@ func (r *repository) SearchProducts(ctx context.Context, query string, offset, l
 
 	if res.IsError() {
 		body, _ := io.ReadAll(res.Body)
-		log.Printf("ERROR: catalog repo SearchProducts: status=%d, body=%s", res.StatusCode, body)
+		log.Printf("ERROR: catalog repo SearchProducts: status=%d, body=%s\n", res.StatusCode, body)
 		return nil, errors.New("elasticsearch error searching products")
 	}
 

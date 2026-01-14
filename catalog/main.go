@@ -43,7 +43,7 @@ func main() {
 	}()
 
 	err = <-exitChan
-	log.Printf("Shutting down. Reason: %v", err)
+	log.Printf("Shutting down. Reason: %v\n", err)
 
 	s.GracefulStop()
 }
