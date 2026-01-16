@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -34,16 +35,19 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 
 	userType, ok := claims["user_type"].(string)
 	if !ok {
+		log.Println("ERROR: gateway VerifyJWT: parsing claims user type")
 		return Account{}, errors.New("invalid token")
 	}
 
 	userID, ok := claims["user_id"].(int32)
 	if !ok {
+		log.Println("ERROR: gateway VerifyJWT: parsing claims user id")
 		return Account{}, errors.New("invalid token")
 	}
 
 	email, ok := claims["sub"].(string)
 	if !ok {
+		log.Println("ERROR: gateway VerifyJWT: parsing claims sub")
 		return Account{}, errors.New("invalid token")
 	}
 
