@@ -58,7 +58,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			ID:          p.Id,
 			Name:        p.Name,
 			Description: p.Description,
-			Price:       p.Price,
+			Price:       p.Price / 100,
 			Quantity:    p.Quantity,
 		}
 	}
@@ -101,7 +101,7 @@ func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
 				ID:          p.Id,
 				Name:        p.Name,
 				Description: p.Description,
-				Price:       p.Price,
+				Price:       p.Price / 100,
 				Quantity:    p.Quantity,
 			}
 		}
