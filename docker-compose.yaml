@@ -55,7 +55,7 @@ services:
       order_db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://pgdb:123456@order_db:5432/pgdb?sslmode=disable
+      ORDER_DB_URL: postgres://pgdb:123456@order_db:5432/pgdb?sslmode=disable
       ORDER_PORT: :9092
       ACCOUNT_SERVICE_URL: account:9090
       CATALOG_SERVICE_URL: catalog:9091
