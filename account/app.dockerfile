@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25-alpine as build
+FROM golang:1.25-alpine AS build
 
 WORKDIR /app
 
@@ -8,10 +8,10 @@ COPY go.mod go.sum ./
 RUN go mod tidy
 
 # Copy source
-COPY ./account/ ./account/
+COPY . ./
 
 # Build binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o account ./account
+RUN CGO_ENABLED=0 GOOS=linux go build -o account ./
 
 # Final stage
 FROM alpine:latest
