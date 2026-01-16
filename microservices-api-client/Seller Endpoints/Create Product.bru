@@ -1,0 +1,24 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/products
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "macbook air m1",
+    "description": "apple macbook m1 chip",
+    "price": 100
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

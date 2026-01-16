@@ -43,7 +43,7 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      ELASTICSEARCH_URL: elasticsearch:9200
+      ELASTICSEARCH_URL: http://elasticsearch:9200
       CATALOG_PORT: :9091
     ports:
       - "9091:9091"
