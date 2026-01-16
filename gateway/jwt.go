@@ -39,7 +39,7 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 		return Account{}, errors.New("invalid token")
 	}
 
-	userID, ok := claims["user_id"].(int32)
+	userID, ok := claims["user_id"].(float64)
 	if !ok {
 		log.Println("ERROR: gateway VerifyJWT: parsing claims user id")
 		return Account{}, errors.New("invalid token")
@@ -52,7 +52,7 @@ func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 	}
 
 	return Account{
-		ID:    userID,
+		ID:    int32(userID),
 		Email: email,
 		Type:  userType,
 	}, nil
