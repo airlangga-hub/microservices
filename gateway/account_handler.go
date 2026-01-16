@@ -29,16 +29,14 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := struct {
-		Token string `json:"token"`
-	}{
-		Token: res.Jwt,
-	}
-
 	respondWithJSON(
 		w,
 		http.StatusCreated,
-		response,
+		struct {
+			Token string `json:"token"`
+		}{
+			Token: res.Jwt,
+		},
 	)
 }
 
