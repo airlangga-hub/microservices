@@ -22,11 +22,15 @@ type Handler struct {
 func main() {
 	secret := os.Getenv("JWT_SECRET")
 	jwtSecret := []byte(secret)
+	
+	accountURL := os.Getenv("ACCOUNT_SERVICE_URL")
+	catalogURL := os.Getenv("CATALOG_SERVICE_URL")
+	orderURL := os.Getenv("ORDER_SERVICE_URL")
 
 	// =====================
 	// account client
 	// =====================
-	accountConn, err := grpc.NewClient("account:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	accountConn, err := grpc.NewClient(accountURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create accountConn: ", err)
 	}
@@ -36,7 +40,7 @@ func main() {
 	// =====================
 	// catalog client
 	// =====================
-	catalogConn, err := grpc.NewClient("catalog:9091", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	catalogConn, err := grpc.NewClient(catalogURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create catalogConn: ", err)
 	}
@@ -46,7 +50,7 @@ func main() {
 	// =====================
 	// order client
 	// =====================
-	orderConn, err := grpc.NewClient("order:9092", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	orderConn, err := grpc.NewClient(orderURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create orderConn: ", err)
 	}
