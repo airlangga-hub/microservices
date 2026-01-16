@@ -50,7 +50,7 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
-	
+
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -78,6 +78,43 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 			Products []Product `json:"products"`
 		}{
 			Products: products,
+		},
+	)
+}
+
+func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Price       float64 `json:"price"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
+
+	res, err := h.CatalogClient.PostProduct(ctx, &catpb.PostProductRequest{
+		Name:        request.Name,
+		Description: request.Description,
+		Price:       int64(request.Price),
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusCreated,
+		Product{
+			ID:          res.Product.Id,
+			Name:        res.Product.Name,
+			Description: res.Product.Description,
+			Price:       res.Product.Price,
 		},
 	)
 }

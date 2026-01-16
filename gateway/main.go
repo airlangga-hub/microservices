@@ -71,6 +71,7 @@ func main() {
 	// buyer endpoints
 	http.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))
 	http.Handle("GET /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.GetOrdersByAccountID)))
-	http.Handle("PATCH /api/becom-seller", h.AuthorizeMiddleware(http.HandlerFunc(h.BecomeSeller)))
+	http.Handle("PATCH /api/become-seller", h.AuthorizeMiddleware(http.HandlerFunc(h.BecomeSeller)))
 	// seller endpoints
+	http.Handle("POST /api/products", h.AuthorizeSellerMiddleware(http.HandlerFunc(h.CreateProduct)))
 }
