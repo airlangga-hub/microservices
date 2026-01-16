@@ -20,12 +20,18 @@ type Handler struct {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	
 	secret := os.Getenv("JWT_SECRET")
 	jwtSecret := []byte(secret)
-	
+
 	accountURL := os.Getenv("ACCOUNT_SERVICE_URL")
 	catalogURL := os.Getenv("CATALOG_SERVICE_URL")
 	orderURL := os.Getenv("ORDER_SERVICE_URL")
+
+	if accountURL == "" || catalogURL == "" || orderURL == "" || secret == "" || port == "" {
+		log.Fatal("One or more gateway environment variables are missing")
+	}
 
 	// =====================
 	// account client
@@ -78,4 +84,6 @@ func main() {
 	http.Handle("PATCH /api/become-seller", h.AuthorizeMiddleware(http.HandlerFunc(h.BecomeSeller)))
 	// seller endpoints
 	http.Handle("POST /api/products", h.AuthorizeSellerMiddleware(http.HandlerFunc(h.CreateProduct)))
+
+	log.Fatalln(http.ListenAndServe(port, nil))
 }
