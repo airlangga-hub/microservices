@@ -3,6 +3,8 @@ services:
     build:
       context: ./gateway
       dockerfile: app.dockerfile
+    environment:
+      JWT_SECRET: secret
     ports:
       - "8080:8080"
     restart: on-failure
@@ -16,6 +18,7 @@ services:
     environment:
       ACCOUNT_DB_URL: postgres://pgdb:123456@account_db:5432/pgdb?sslmode=disable
       ACCOUNT_PORT: :9090
+      JWT_SECRET: secret
     ports:
       - "9090:9090"
     restart: on-failure
