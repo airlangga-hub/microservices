@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -53,26 +54,20 @@ type ESresponse struct {
 
 func NewRepository() (Repository, error) {
 	esUrl := os.Getenv("ELASTICSEARCH_URL")
-
-	cfg := elasticsearch.Config{
-		Addresses: []string{esUrl},
-	}
+	cfg := elasticsearch.Config{Addresses: []string{esUrl}}
 
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {
-		log.Println("ERROR: catalog repo NewRepository: ", err)
-		return nil, errors.New("error creating elastic search client")
+		return nil, fmt.Errorf("error creating client: %w", err)
 	}
 
-	// create index if not exist
-	res, err := esapi.IndicesExistsRequest{
+	// 1. Check if index exists
+	_, err = esapi.IndicesExistsRequest{
 		Index: []string{ESIndex},
 	}.Do(context.Background(), client)
-	if err != nil || res.StatusCode == 404 {
+
+	if err != nil {
 		client.Indices.Create(ESIndex)
-	}
-	if res != nil && res.Body != nil {
-		defer res.Body.Close()
 	}
 
 	return &repository{client}, nil
