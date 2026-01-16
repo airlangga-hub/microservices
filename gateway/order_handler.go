@@ -11,9 +11,6 @@ import (
 )
 
 func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
-	defer cancel()
-
 	account, ok := r.Context().Value(accountKey).(Account)
 	if !ok {
 		http.Error(w, "unauthorized user", http.StatusUnauthorized)
@@ -37,6 +34,9 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			Quantity: p.Quantity,
 		}
 	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
 
 	res, err := h.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
 	if err != nil {
@@ -77,14 +77,14 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
-	defer cancel()
-
 	account, ok := r.Context().Value(accountKey).(Account)
 	if !ok {
 		http.Error(w, "unauthorized user", http.StatusUnauthorized)
 		return
 	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
 
 	res, err := h.OrderClient.GetOrdersByAccountID(ctx, &orderpb.GetOrdersByAccountIDRequest{AccountId: account.ID})
 	if err != nil {

@@ -10,9 +10,6 @@ import (
 )
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
-	defer cancel()
-
 	var request struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -22,6 +19,9 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
 
 	res, err := h.AccountClient.SignUp(ctx, &accpb.SignUpRequest{Email: request.Email, Password: request.Password})
 	if err != nil {
@@ -41,9 +41,6 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
-	defer cancel()
-
 	var request struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -53,6 +50,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
 
 	res, err := h.AccountClient.Login(ctx, &accpb.LoginRequest{Email: request.Email, Password: request.Password})
 	if err != nil {

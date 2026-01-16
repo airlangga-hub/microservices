@@ -42,9 +42,6 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
-	defer cancel()
-
 	var request struct {
 		Query string `json:"query"`
 	}
@@ -53,6 +50,9 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
 
 	res, err := h.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{Query: request.Query})
 	if err != nil {
