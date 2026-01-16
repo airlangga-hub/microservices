@@ -3,10 +3,19 @@ services:
     build:
       context: ./gateway
       dockerfile: app.dockerfile
-    environment:
-      JWT_SECRET: secret
     ports:
       - "8080:8080"
+    environment:
+      ACCOUNT_SERVICE_URL: http://account:9090
+      CATALOG_SERVICE_URL: http://catalog:9091
+      ORDER_SERVICE_URL: http://order:9092
+    depends_on:
+      account:
+        condition: service_started
+      catalog:
+        condition: service_started
+      order:
+        condition: service_started
     restart: on-failure
 
   account:
@@ -14,11 +23,11 @@ services:
       context: ./account
       dockerfile: app.dockerfile
     depends_on:
-      - account_db
+      account_db:
+        condition: service_healthy
     environment:
       ACCOUNT_DB_URL: postgres://pgdb:123456@account_db:5432/pgdb?sslmode=disable
       ACCOUNT_PORT: :9090
-      JWT_SECRET: secret
     ports:
       - "9090:9090"
     restart: on-failure
@@ -28,7 +37,8 @@ services:
       context: ./catalog
       dockerfile: app.dockerfile
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       CATALOG_PORT: :9091
@@ -41,7 +51,8 @@ services:
       context: ./order
       dockerfile: app.dockerfile
     depends_on:
-      - order_db
+      order_db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://pgdb:123456@order_db:5432/pgdb?sslmode=disable
       ORDER_PORT: :9092
@@ -59,17 +70,27 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - account_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m # Reduced for local stability
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
   order_db:
@@ -80,6 +101,11 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - order_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:
