@@ -19,7 +19,7 @@ func NewService(r Repository) Service {
 }
 
 func (s *service) CreateProduct(ctx context.Context, name, description string, price int64) (Product, error) {
-	return s.repository.CreateProduct(ctx, productDocument{Name: name, Description: description, Price: price})
+	return s.repository.CreateProduct(ctx, productDocument{Name: name, Description: description, Price: price * 100})
 }
 
 func (s *service) GetProductByID(ctx context.Context, id string) (Product, error) {

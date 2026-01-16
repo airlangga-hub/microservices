@@ -26,7 +26,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 			ID:          product.Id,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price,
+			Price:       product.Price / 100,
 		}
 	}
 
@@ -34,7 +34,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		w,
 		http.StatusOK,
 		struct {
-			Products []Product
+			Products []Product `json:"products"`
 		}{
 			Products: products,
 		},
@@ -48,7 +48,7 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 	var request struct {
 		Query string `json:"query"`
 	}
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -67,7 +67,7 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 			ID:          product.Id,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price,
+			Price:       product.Price / 100,
 		}
 	}
 
@@ -75,7 +75,7 @@ func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 		w,
 		http.StatusOK,
 		struct {
-			Products []Product
+			Products []Product `json:"products"`
 		}{
 			Products: products,
 		},
