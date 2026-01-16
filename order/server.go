@@ -59,7 +59,7 @@ func ListenGrpc(service Service, port string) error {
 }
 
 func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.PostOrderResponse, error) {
-	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{Id: r.AccountId})
+	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: r.AccountId})
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 }
 
 func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAccountIDRequest) (*pb.GetOrdersByAccountIDResponse, error) {
-	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{Id: r.AccountId})
+	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: r.AccountId})
 	if err != nil {
 		return nil, err
 	}

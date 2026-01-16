@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	AccountService_SignUp_FullMethodName      = "/pb.AccountService/SignUp"
 	AccountService_Login_FullMethodName       = "/pb.AccountService/Login"
+	AccountService_GetAccount_FullMethodName  = "/pb.AccountService/GetAccount"
 	AccountService_BecomSeller_FullMethodName = "/pb.AccountService/BecomSeller"
 )
 
@@ -30,6 +31,7 @@ const (
 type AccountServiceClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Token, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
+	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
 	BecomSeller(ctx context.Context, in *BecomeSellerRequest, opts ...grpc.CallOption) (*BecomeSellerResponse, error)
 }
 
@@ -61,6 +63,16 @@ func (c *accountServiceClient) Login(ctx context.Context, in *LoginRequest, opts
 	return out, nil
 }
 
+func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAccountResponse)
+	err := c.cc.Invoke(ctx, AccountService_GetAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accountServiceClient) BecomSeller(ctx context.Context, in *BecomeSellerRequest, opts ...grpc.CallOption) (*BecomeSellerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BecomeSellerResponse)
@@ -77,6 +89,7 @@ func (c *accountServiceClient) BecomSeller(ctx context.Context, in *BecomeSeller
 type AccountServiceServer interface {
 	SignUp(context.Context, *SignUpRequest) (*Token, error)
 	Login(context.Context, *LoginRequest) (*Token, error)
+	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
 	BecomSeller(context.Context, *BecomeSellerRequest) (*BecomeSellerResponse, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }
@@ -93,6 +106,9 @@ func (UnimplementedAccountServiceServer) SignUp(context.Context, *SignUpRequest)
 }
 func (UnimplementedAccountServiceServer) Login(context.Context, *LoginRequest) (*Token, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAccountServiceServer) GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAccount not implemented")
 }
 func (UnimplementedAccountServiceServer) BecomSeller(context.Context, *BecomeSellerRequest) (*BecomeSellerResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BecomSeller not implemented")
@@ -154,6 +170,24 @@ func _AccountService_Login_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccountService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).GetAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccountService_GetAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).GetAccount(ctx, req.(*GetAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AccountService_BecomSeller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BecomeSellerRequest)
 	if err := dec(in); err != nil {
@@ -186,6 +220,10 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _AccountService_Login_Handler,
+		},
+		{
+			MethodName: "GetAccount",
+			Handler:    _AccountService_GetAccount_Handler,
 		},
 		{
 			MethodName: "BecomSeller",

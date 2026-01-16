@@ -24,8 +24,19 @@ message BecomeSellerResponse {
     string message = 1;
 }
 
+message GetAccountRequest {
+    int32 account_id = 1;
+}
+
+message GetAccountResponse {
+    int32 account_id = 1;
+    string email = 2;
+    string type = 3;
+}
+
 service AccountService {
     rpc SignUp(SignUpRequest) returns (Token);
     rpc Login(LoginRequest) returns (Token);
+    rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
     rpc BecomSeller(BecomeSellerRequest) returns (BecomeSellerResponse);
 }

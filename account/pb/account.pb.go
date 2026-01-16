@@ -257,6 +257,110 @@ func (x *BecomeSellerResponse) GetMessage() string {
 	return ""
 }
 
+type GetAccountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     int32                  `protobuf:"varint,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountRequest) Reset() {
+	*x = GetAccountRequest{}
+	mi := &file_account_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountRequest) ProtoMessage() {}
+
+func (x *GetAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_account_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountRequest.ProtoReflect.Descriptor instead.
+func (*GetAccountRequest) Descriptor() ([]byte, []int) {
+	return file_account_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetAccountRequest) GetAccountId() int32 {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+type GetAccountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     int32                  `protobuf:"varint,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountResponse) Reset() {
+	*x = GetAccountResponse{}
+	mi := &file_account_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountResponse) ProtoMessage() {}
+
+func (x *GetAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_account_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountResponse.ProtoReflect.Descriptor instead.
+func (*GetAccountResponse) Descriptor() ([]byte, []int) {
+	return file_account_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetAccountResponse) GetAccountId() int32 {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+func (x *GetAccountResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *GetAccountResponse) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
 var File_account_proto protoreflect.FileDescriptor
 
 const file_account_proto_rawDesc = "" +
@@ -273,10 +377,20 @@ const file_account_proto_rawDesc = "" +
 	"\x13BecomeSellerRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"0\n" +
 	"\x14BecomeSellerResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\xa0\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"2\n" +
+	"\x11GetAccountRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\x05R\taccountId\"]\n" +
+	"\x12GetAccountResponse\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\x05R\taccountId\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type2\xdd\x01\n" +
 	"\x0eAccountService\x12&\n" +
 	"\x06SignUp\x12\x11.pb.SignUpRequest\x1a\t.pb.Token\x12$\n" +
-	"\x05Login\x12\x10.pb.LoginRequest\x1a\t.pb.Token\x12@\n" +
+	"\x05Login\x12\x10.pb.LoginRequest\x1a\t.pb.Token\x12;\n" +
+	"\n" +
+	"GetAccount\x12\x15.pb.GetAccountRequest\x1a\x16.pb.GetAccountResponse\x12@\n" +
 	"\vBecomSeller\x12\x17.pb.BecomeSellerRequest\x1a\x18.pb.BecomeSellerResponseB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
 
 var (
@@ -291,23 +405,27 @@ func file_account_proto_rawDescGZIP() []byte {
 	return file_account_proto_rawDescData
 }
 
-var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_account_proto_goTypes = []any{
 	(*Token)(nil),                // 0: pb.Token
 	(*SignUpRequest)(nil),        // 1: pb.SignUpRequest
 	(*LoginRequest)(nil),         // 2: pb.LoginRequest
 	(*BecomeSellerRequest)(nil),  // 3: pb.BecomeSellerRequest
 	(*BecomeSellerResponse)(nil), // 4: pb.BecomeSellerResponse
+	(*GetAccountRequest)(nil),    // 5: pb.GetAccountRequest
+	(*GetAccountResponse)(nil),   // 6: pb.GetAccountResponse
 }
 var file_account_proto_depIdxs = []int32{
 	1, // 0: pb.AccountService.SignUp:input_type -> pb.SignUpRequest
 	2, // 1: pb.AccountService.Login:input_type -> pb.LoginRequest
-	3, // 2: pb.AccountService.BecomSeller:input_type -> pb.BecomeSellerRequest
-	0, // 3: pb.AccountService.SignUp:output_type -> pb.Token
-	0, // 4: pb.AccountService.Login:output_type -> pb.Token
-	4, // 5: pb.AccountService.BecomSeller:output_type -> pb.BecomeSellerResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	5, // 2: pb.AccountService.GetAccount:input_type -> pb.GetAccountRequest
+	3, // 3: pb.AccountService.BecomSeller:input_type -> pb.BecomeSellerRequest
+	0, // 4: pb.AccountService.SignUp:output_type -> pb.Token
+	0, // 5: pb.AccountService.Login:output_type -> pb.Token
+	6, // 6: pb.AccountService.GetAccount:output_type -> pb.GetAccountResponse
+	4, // 7: pb.AccountService.BecomSeller:output_type -> pb.BecomeSellerResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -324,7 +442,7 @@ func file_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_account_proto_rawDesc), len(file_account_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
