@@ -33,6 +33,19 @@ func (s *Server) BecomSeller(ctx context.Context, r *pb.BecomeSellerRequest) (*p
 	if err := s.Svc.BecomSeller(ctx, r.Email); err != nil {
 		return nil, err
 	}
-	
+
 	return &pb.BecomeSellerResponse{Message: "become seller success"}, nil
+}
+
+func (s *Server) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.GetAccountResponse, error) {
+	account, err := s.Svc.GetAccount(ctx, r.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetAccountResponse{
+		AccountId: account.ID,
+		Email:     account.Email,
+		Type:      account.Type,
+	}, nil
 }

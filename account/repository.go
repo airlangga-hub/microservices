@@ -13,6 +13,7 @@ type Repository interface {
 	Close() error
 	CreateAccount(ctx context.Context, email, hashedPassword string) (Account, error)
 	GetAccountByEmail(ctx context.Context, email string) (Account, error)
+	GetAccountByID(ctx context.Context, accountID int32) (Account, error)
 	UpdateAccountType(ctx context.Context, email string) error
 }
 
@@ -83,6 +84,30 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 	); err != nil {
 		log.Println("ERROR: account repo GetAccountByEmail: ", err)
 		return Account{}, errors.New("unauthorized user")
+	}
+
+	return account, nil
+}
+
+func (r *repository) GetAccountByID(ctx context.Context, accountID int32) (Account, error) {
+	account := Account{}
+
+	if err := r.db.QueryRowContext(
+		ctx,
+		`SELECT
+			id,
+			email,
+			type
+		FROM accounts
+		WHERE id = $1;`,
+		accountID,
+	).Scan(
+		&account.ID,
+		&account.Email,
+		&account.Type,
+	); err != nil {
+		log.Println("ERROR: account repo GetAccountByID: ", err)
+		return Account{}, errors.New("account not found")
 	}
 
 	return account, nil
