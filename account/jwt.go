@@ -10,7 +10,7 @@ func MakeJWT(userID int32, userType, email string, secret []byte) (string, error
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"exp":       time.Now().Add(time.Hour * 24),
+			"exp":       time.Now().UTC().Add(time.Hour * 24).Unix(),
 			"sub":       email,
 			"user_type": userType,
 			"user_id":   userID,

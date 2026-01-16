@@ -73,6 +73,7 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - account_pgdata:/var/lib/postgresql/data
+      - ./account/up.sql:/docker-entrypoint-initdb.d/1.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
       interval: 5s
@@ -104,6 +105,7 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - order_pgdata:/var/lib/postgresql/data
+      - ./order/up.sql:/docker-entrypoint-initdb.d/1.sql 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
       interval: 5s
