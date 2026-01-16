@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25-alpine as build
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-COPY --from=builder /app/catalog .
+COPY --from=build /app/catalog .
 
 EXPOSE 9091
 
