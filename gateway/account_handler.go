@@ -77,6 +77,10 @@ func (h *Handler) BecomeSeller(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unauthorized user", http.StatusUnauthorized)
 		return
 	}
+	if account.Type == "seller" {
+		http.Error(w, "you are already a seller", http.StatusBadRequest)
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
