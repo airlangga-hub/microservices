@@ -28,3 +28,11 @@ func (s *Server) Login(ctx context.Context, r *pb.LoginRequest) (*pb.Token, erro
 
 	return &pb.Token{Jwt: token}, nil
 }
+
+func (s *Server) BecomSeller(ctx context.Context, r *pb.BecomeSellerRequest) (*pb.BecomeSellerResponse, error) {
+	if err := s.Svc.BecomSeller(ctx, r.Email); err != nil {
+		return nil, err
+	}
+	
+	return &pb.BecomeSellerResponse{Message: "success"}, nil
+}

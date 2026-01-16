@@ -16,7 +16,16 @@ message LoginRequest {
     string password = 2;
 }
 
+message BecomeSellerRequest {
+    string email = 1;
+}
+
+message BecomeSellerResponse {
+    string message = 1;
+}
+
 service AccountService {
     rpc SignUp(SignUpRequest) returns (Token);
     rpc Login(LoginRequest) returns (Token);
+    rpc BecomSeller(BecomeSellerRequest) returns (BecomeSellerResponse);
 }

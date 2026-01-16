@@ -13,6 +13,7 @@ type Repository interface {
 	Close() error
 	CreateAccount(ctx context.Context, email, hashedPassword string) (Account, error)
 	GetAccountByEmail(ctx context.Context, email string) (Account, error)
+	UpdateAccountType(ctx context.Context, email string) error
 }
 
 type repository struct {
@@ -85,4 +86,31 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 	}
 
 	return account, nil
+}
+
+func (r *repository) UpdateAccountType(ctx context.Context, email string) error {
+	res, err := r.db.ExecContext(
+		ctx,
+		`
+		UPDATE accounts
+		SET type = 'seller'
+		WHERE email = $1
+		;`,
+		email,
+	)
+	if err != nil {
+		log.Println("ERROR: account repo UpdateAccountType (ExecContext): ", err)
+		return errors.New("failed to become seller")
+	}
+	
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Println("ERROR: account repo UpdateAccountType (RowsAffected): ", err)
+		return errors.New("failed to become seller")
+	}
+	if rows == 0 {
+		return errors.New("no account found with that email")
+	}
+	
+	return nil
 }
