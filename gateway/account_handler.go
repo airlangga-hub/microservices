@@ -70,3 +70,30 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 }
+
+func (h *Handler) BecomeSeller(w http.ResponseWriter, r *http.Request) {
+	account, ok := r.Context().Value(accountKey).(Account)
+	if !ok {
+		http.Error(w, "unauthorized user", http.StatusUnauthorized)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
+
+	res, err := h.AccountClient.BecomSeller(ctx, &accpb.BecomeSellerRequest{Email: account.Email})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		struct {
+			Message string `json:"message"`
+		}{
+			Message: res.Message,
+		},
+	)
+}

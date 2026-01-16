@@ -34,5 +34,5 @@ func (s *Server) BecomSeller(ctx context.Context, r *pb.BecomeSellerRequest) (*p
 		return nil, err
 	}
 	
-	return &pb.BecomeSellerResponse{Message: "success"}, nil
+	return &pb.BecomeSellerResponse{Message: "become seller success"}, nil
 }

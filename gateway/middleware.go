@@ -15,7 +15,7 @@ func (h *Handler) AuthorizeMiddleware(next http.Handler) http.Handler {
 
 		account, err := VerifyJWT(authHeader, h.Secret)
 		if err != nil {
-			http.Error(w, "unauthorized user", http.StatusUnauthorized)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 

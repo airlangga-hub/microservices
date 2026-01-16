@@ -169,6 +169,94 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
+type BecomeSellerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BecomeSellerRequest) Reset() {
+	*x = BecomeSellerRequest{}
+	mi := &file_account_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BecomeSellerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BecomeSellerRequest) ProtoMessage() {}
+
+func (x *BecomeSellerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_account_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BecomeSellerRequest.ProtoReflect.Descriptor instead.
+func (*BecomeSellerRequest) Descriptor() ([]byte, []int) {
+	return file_account_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BecomeSellerRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type BecomeSellerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BecomeSellerResponse) Reset() {
+	*x = BecomeSellerResponse{}
+	mi := &file_account_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BecomeSellerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BecomeSellerResponse) ProtoMessage() {}
+
+func (x *BecomeSellerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_account_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BecomeSellerResponse.ProtoReflect.Descriptor instead.
+func (*BecomeSellerResponse) Descriptor() ([]byte, []int) {
+	return file_account_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *BecomeSellerResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_account_proto protoreflect.FileDescriptor
 
 const file_account_proto_rawDesc = "" +
@@ -181,10 +269,15 @@ const file_account_proto_rawDesc = "" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2^\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"+\n" +
+	"\x13BecomeSellerRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"0\n" +
+	"\x14BecomeSellerResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xa0\x01\n" +
 	"\x0eAccountService\x12&\n" +
 	"\x06SignUp\x12\x11.pb.SignUpRequest\x1a\t.pb.Token\x12$\n" +
-	"\x05Login\x12\x10.pb.LoginRequest\x1a\t.pb.TokenB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
+	"\x05Login\x12\x10.pb.LoginRequest\x1a\t.pb.Token\x12@\n" +
+	"\vBecomSeller\x12\x17.pb.BecomeSellerRequest\x1a\x18.pb.BecomeSellerResponseB<Z:github.com/airlangga-hub/microservices/services/account/pbb\x06proto3"
 
 var (
 	file_account_proto_rawDescOnce sync.Once
@@ -198,19 +291,23 @@ func file_account_proto_rawDescGZIP() []byte {
 	return file_account_proto_rawDescData
 }
 
-var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_account_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_account_proto_goTypes = []any{
-	(*Token)(nil),         // 0: pb.Token
-	(*SignUpRequest)(nil), // 1: pb.SignUpRequest
-	(*LoginRequest)(nil),  // 2: pb.LoginRequest
+	(*Token)(nil),                // 0: pb.Token
+	(*SignUpRequest)(nil),        // 1: pb.SignUpRequest
+	(*LoginRequest)(nil),         // 2: pb.LoginRequest
+	(*BecomeSellerRequest)(nil),  // 3: pb.BecomeSellerRequest
+	(*BecomeSellerResponse)(nil), // 4: pb.BecomeSellerResponse
 }
 var file_account_proto_depIdxs = []int32{
 	1, // 0: pb.AccountService.SignUp:input_type -> pb.SignUpRequest
 	2, // 1: pb.AccountService.Login:input_type -> pb.LoginRequest
-	0, // 2: pb.AccountService.SignUp:output_type -> pb.Token
-	0, // 3: pb.AccountService.Login:output_type -> pb.Token
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	3, // 2: pb.AccountService.BecomSeller:input_type -> pb.BecomeSellerRequest
+	0, // 3: pb.AccountService.SignUp:output_type -> pb.Token
+	0, // 4: pb.AccountService.Login:output_type -> pb.Token
+	4, // 5: pb.AccountService.BecomSeller:output_type -> pb.BecomeSellerResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -227,7 +324,7 @@ func file_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_account_proto_rawDesc), len(file_account_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
