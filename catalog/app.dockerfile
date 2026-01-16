@@ -8,10 +8,10 @@ COPY go.mod go.sum ./
 RUN go mod tidy
 
 # Copy source
-COPY services/catalog/ ./services/catalog/
+COPY ./catalog/ ./catalog/
 
 # Build binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o catalog ./services/catalog
+RUN CGO_ENABLED=0 GOOS=linux go build -o catalog ./catalog
 
 # Final stage
 FROM alpine:latest

@@ -1,4 +1,12 @@
 services:
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: app.dockerfile
+    ports:
+      - "8080:8080"
+    restart: on-failure
+
   account:
     build:
       context: ./account

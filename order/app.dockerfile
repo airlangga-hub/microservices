@@ -8,10 +8,10 @@ COPY go.mod go.sum ./
 RUN go mod tidy
 
 # Copy source
-COPY services/order/ ./services/order/
+COPY ./order/ ./order/
 
 # Build binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o order ./services/order
+RUN CGO_ENABLED=0 GOOS=linux go build -o order ./order
 
 # Final stage
 FROM alpine:latest

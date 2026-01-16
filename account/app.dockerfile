@@ -8,10 +8,10 @@ COPY go.mod go.sum ./
 RUN go mod tidy
 
 # Copy source
-COPY services/account/ ./services/account/
+COPY ./account/ ./account/
 
 # Build binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o account ./services/account
+RUN CGO_ENABLED=0 GOOS=linux go build -o account ./account
 
 # Final stage
 FROM alpine:latest
