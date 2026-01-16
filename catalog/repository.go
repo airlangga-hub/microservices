@@ -71,8 +71,8 @@ func NewRepository() (Repository, error) {
 	if err != nil || res.StatusCode == 404 {
 		client.Indices.Create(ESIndex)
 	}
-	if res != nil {
-		res.Body.Close()
+	if res != nil && res.Body != nil {
+		defer res.Body.Close()
 	}
 
 	return &repository{client}, nil
