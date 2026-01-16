@@ -1,0 +1,22 @@
+meta {
+  name: Search Products
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8080/api/products/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "query": "apple"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
