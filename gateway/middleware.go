@@ -9,11 +9,11 @@ type contextKey string
 
 const accountKey contextKey = "account"
 
-func (cfg *Config) AuthorizeMiddleware(next http.Handler) http.Handler {
+func (h *Handler) AuthorizeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 
-		account, err := VerifyJWT(authHeader, cfg.Secret)
+		account, err := VerifyJWT(authHeader, h.Secret)
 		if err != nil {
 			http.Error(w, "unauthorized user", http.StatusUnauthorized)
 			return

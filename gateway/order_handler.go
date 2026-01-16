@@ -10,7 +10,7 @@ import (
 	orderpb "github.com/airlangga-hub/microservices/gateway/order_pb"
 )
 
-func (cfg *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (cfg *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res, err := cfg.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
+	res, err := h.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -76,7 +76,7 @@ func (cfg *Config) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (cfg *Config) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -86,7 +86,7 @@ func (cfg *Config) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	res, err := cfg.OrderClient.GetOrdersByAccountID(ctx, &orderpb.GetOrdersByAccountIDRequest{AccountId: account.ID})
+	res, err := h.OrderClient.GetOrdersByAccountID(ctx, &orderpb.GetOrdersByAccountIDRequest{AccountId: account.ID})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -9,11 +9,11 @@ import (
 	catpb "github.com/airlangga-hub/microservices/gateway/catalog_pb"
 )
 
-func (cfg *Config) GetProducts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
-	res, err := cfg.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{})
+	res, err := h.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,7 +41,7 @@ func (cfg *Config) GetProducts(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (cfg *Config) SearchProducts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -54,7 +54,7 @@ func (cfg *Config) SearchProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := cfg.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{Query: request.Query})
+	res, err := h.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{Query: request.Query})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -9,7 +9,7 @@ import (
 	accpb "github.com/airlangga-hub/microservices/gateway/account_pb"
 )
 
-func (cfg *Config) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -23,7 +23,7 @@ func (cfg *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := cfg.AccountClient.SignUp(ctx, &accpb.SignUpRequest{Email: request.Email, Password: request.Password})
+	res, err := h.AccountClient.SignUp(ctx, &accpb.SignUpRequest{Email: request.Email, Password: request.Password})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -42,7 +42,7 @@ func (cfg *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
@@ -56,7 +56,7 @@ func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := cfg.AccountClient.Login(ctx, &accpb.LoginRequest{Email: request.Email, Password: request.Password})
+	res, err := h.AccountClient.Login(ctx, &accpb.LoginRequest{Email: request.Email, Password: request.Password})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
