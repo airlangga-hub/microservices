@@ -57,16 +57,7 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 	return MakeJWT(account.ID, account.Type, account.Email, s.secret)
 }
 
-func (s *service) BecomSeller(ctx context.Context, email string) error {
-	account, err := s.repository.GetAccountByEmail(ctx, email)
-	if err != nil {
-		return err
-	}
-	
-	if account.Type == "seller" {
-		return errors.New("you're already a seller")
-	}
-	
+func (s *service) BecomSeller(ctx context.Context, email string) error {	
 	return s.repository.UpdateAccountType(ctx, email)
 }
 

@@ -91,13 +91,21 @@ func (h *Handler) BecomeSeller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := MakeJWTSeller(account.ID, account.Email, h.Secret)
+	if err != nil {
+		http.Error(w, "failed to become seller", http.StatusInternalServerError)
+		return
+	}
+
 	respondWithJSON(
 		w,
 		http.StatusOK,
 		struct {
 			Message string `json:"message"`
+			Token   string `json:"token"`
 		}{
 			Message: res.Message,
+			Token:   token,
 		},
 	)
 }

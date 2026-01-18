@@ -10,6 +10,10 @@ patch {
   auth: inherit
 }
 
+script:post-response {
+  bru.setVar("user_token", res.body.token);
+}
+
 settings {
   encodeUrl: true
   timeout: 0
