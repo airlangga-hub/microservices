@@ -176,7 +176,7 @@ func (s *Server) GetOrdersByAccountID(ctx context.Context, r *pb.GetOrdersByAcco
 			Id:         order.ID,
 			AccountId:  order.AccountID,
 			Products:   pbProducts,
-			TotalPrice: order.TotalPrice,
+			TotalPrice: order.TotalPrice / 100,
 			CreatedAt:  createdAt,
 		}
 	}
