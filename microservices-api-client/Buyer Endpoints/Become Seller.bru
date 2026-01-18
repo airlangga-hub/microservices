@@ -11,7 +11,9 @@ patch {
 }
 
 script:post-response {
-  bru.setVar("user_token", res.body.token);
+  if (res.getStatus() === 200) {
+      bru.setVar("user_token", res.body.token);
+  }
 }
 
 settings {
