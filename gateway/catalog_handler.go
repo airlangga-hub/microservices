@@ -106,7 +106,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	res, err := h.CatalogClient.PostProduct(ctx, &catpb.PostProductRequest{
 		Name:        request.Name,
 		Description: request.Description,
-		Price:       int64(request.Price),
+		Price:       request.Price,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

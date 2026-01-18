@@ -1,9 +1,12 @@
 package main
 
-import "context"
+import (
+	"context"
+	"math"
+)
 
 type Service interface {
-	CreateProduct(ctx context.Context, name, description string, price int64) (Product, error)
+	CreateProduct(ctx context.Context, name, description string, price float64) (Product, error)
 	GetProductByID(ctx context.Context, id string) (Product, error)
 	GetProducts(ctx context.Context, offset, limit int32) ([]Product, error)
 	GetProductsByIDs(ctx context.Context, ids []string) ([]Product, error)
@@ -18,8 +21,8 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s *service) CreateProduct(ctx context.Context, name, description string, price int64) (Product, error) {
-	return s.repository.CreateProduct(ctx, productDocument{Name: name, Description: description, Price: price * 100})
+func (s *service) CreateProduct(ctx context.Context, name, description string, price float64) (Product, error) {
+	return s.repository.CreateProduct(ctx, productDocument{Name: name, Description: description, Price: int64(math.Round(price * 100))})
 }
 
 func (s *service) GetProductByID(ctx context.Context, id string) (Product, error) {

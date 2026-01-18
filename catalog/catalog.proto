@@ -13,7 +13,7 @@ message Product {
 message PostProductRequest {
     string name = 1;
     string description = 2;
-    int64 price = 3;
+    double price = 3;
 }
 
 message PostProductResponse {
