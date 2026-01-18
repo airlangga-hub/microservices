@@ -77,6 +77,7 @@ func main() {
 	http.HandleFunc("POST /api/signup", h.SignUp)
 	http.HandleFunc("POST /api/login", h.Login)
 	http.HandleFunc("GET /api/products", h.GetProducts)
+	http.HandleFunc("GET /api/products/{id}", h.GetProductByID)
 	http.HandleFunc("GET /api/products/search", h.SearchProducts)
 	// buyer endpoints
 	http.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))

@@ -38,7 +38,7 @@ func (s *Server) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.G
 			Id:          product.ID,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price,
+			Price:       product.Price / 100,
 		},
 	}, nil
 }
@@ -66,7 +66,7 @@ func (s *Server) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb
 			Id:          p.ID,
 			Name:        p.Name,
 			Description: p.Description,
-			Price:       p.Price,
+			Price:       p.Price / 100,
 		}
 	}
 

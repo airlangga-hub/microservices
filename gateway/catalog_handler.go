@@ -118,3 +118,37 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 }
+
+func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "product id is required to search", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
+	defer cancel()
+
+	res, err := h.CatalogClient.GetProduct(ctx, &catpb.GetProductRequest{Id: id})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	product := Product{
+		ID:          res.Product.Id,
+		Name:        res.Product.Name,
+		Description: res.Product.Description,
+		Price:       res.Product.Price,
+	}
+
+	respondWithJSON(
+		w,
+		http.StatusOK,
+		struct {
+			Product Product `json:"product"`
+		}{
+			Product: product,
+		},
+	)
+}
