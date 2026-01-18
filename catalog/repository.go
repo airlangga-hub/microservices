@@ -119,6 +119,9 @@ func (r *repository) CreateProduct(ctx context.Context, p productDocument) (Prod
 	}
 
 	response.Source.ID = response.ID
+	response.Source.Name = p.Name
+	response.Source.Description = p.Description
+	response.Source.Price = p.Price
 
 	return response.Source, nil
 }
