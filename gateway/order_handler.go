@@ -58,7 +58,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			ID:          p.Id,
 			Name:        p.Name,
 			Description: p.Description,
-			Price:       float64(p.Price / 100),
+			Price:       float64(p.Price) / 100,
 			Quantity:    p.Quantity,
 		}
 	}
@@ -70,7 +70,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			ID:         res.Order.Id,
 			AccountID:  res.Order.AccountId,
 			Products:   products,
-			TotalPrice: float64(res.Order.TotalPrice / 100),
+			TotalPrice: float64(res.Order.TotalPrice) / 100,
 			CreatedAt:  t,
 		},
 	)
@@ -101,7 +101,7 @@ func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
 				ID:          p.Id,
 				Name:        p.Name,
 				Description: p.Description,
-				Price:       float64(p.Price / 100),
+				Price:       float64(p.Price) / 100,
 				Quantity:    p.Quantity,
 			}
 		}
@@ -117,7 +117,7 @@ func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
 			ID:         o.Id,
 			AccountID:  o.AccountId,
 			Products:   products,
-			TotalPrice: float64(o.TotalPrice / 100),
+			TotalPrice: float64(o.TotalPrice) / 100,
 			CreatedAt:  t,
 		}
 	}
