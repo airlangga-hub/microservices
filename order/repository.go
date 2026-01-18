@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"slices"
 	"time"
 
 	"github.com/lib/pq"
@@ -118,7 +119,8 @@ func (r *repository) CreateOrder(ctx context.Context, o Order) (Order, error) {
 func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
-		`SELECT
+		`
+		SELECT
 			o.id,
 			o.account_id,
 			o.total_price,
@@ -129,7 +131,7 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 		JOIN order_products op
 		ON o.id = op.order_id
 		WHERE account_id = $1
-		ORDER BY o.id;`,
+		;`,
 		accountID,
 	)
 
@@ -198,6 +200,16 @@ func (r *repository) GetOrdersByAccountID(ctx context.Context, accountID int32) 
 	for _, order := range ordersMap {
 		orders = append(orders, order)
 	}
+
+	slices.SortFunc(orders, func(a, b *Order) int {
+		if a.ID < b.ID {
+			return -1
+		}
+		if a.ID > b.ID {
+			return 1
+		}
+		return 0
+	})
 
 	return orders, nil
 }

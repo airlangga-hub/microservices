@@ -32,7 +32,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 			ID:          product.Id,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price,
+			Price:       product.Price / 100,
 		}
 	}
 
@@ -120,7 +120,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 			ID:          res.Product.Id,
 			Name:        res.Product.Name,
 			Description: res.Product.Description,
-			Price:       res.Product.Price,
+			Price:       res.Product.Price / 100,
 		},
 	)
 }
@@ -145,7 +145,7 @@ func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 		ID:          res.Product.Id,
 		Name:        res.Product.Name,
 		Description: res.Product.Description,
-		Price:       res.Product.Price,
+		Price:       res.Product.Price / 100,
 	}
 
 	respondWithJSON(
@@ -157,8 +157,4 @@ func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 			Product: product,
 		},
 	)
-}
-
-func (h *Handler) GetProductsByIDs(w http.ResponseWriter, r *http.Request) {
-
 }

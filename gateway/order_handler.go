@@ -70,7 +70,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			ID:         res.Order.Id,
 			AccountID:  res.Order.AccountId,
 			Products:   products,
-			TotalPrice: res.Order.TotalPrice,
+			TotalPrice: res.Order.TotalPrice / 100,
 			CreatedAt:  t,
 		},
 	)
@@ -117,7 +117,7 @@ func (h *Handler) GetOrdersByAccountID(w http.ResponseWriter, r *http.Request) {
 			ID:         o.Id,
 			AccountID:  o.AccountId,
 			Products:   products,
-			TotalPrice: o.TotalPrice,
+			TotalPrice: o.TotalPrice / 100,
 			CreatedAt:  t,
 		}
 	}
