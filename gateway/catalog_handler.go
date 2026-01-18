@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	catpb "github.com/airlangga-hub/microservices/gateway/catalog_pb"
@@ -13,7 +14,12 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
-	res, err := h.CatalogClient.GetProducts(ctx, &catpb.GetProductsRequest{})
+	req := &catpb.GetProductsRequest{}
+	if ids := r.URL.Query().Get("ids"); ids != "" {
+		req.Ids = strings.Split(ids, ",")
+	}
+
+	res, err := h.CatalogClient.GetProducts(ctx, req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -26,7 +32,7 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 			ID:          product.Id,
 			Name:        product.Name,
 			Description: product.Description,
-			Price:       product.Price / 100,
+			Price:       product.Price,
 		}
 	}
 
@@ -151,4 +157,8 @@ func (h *Handler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 			Product: product,
 		},
 	)
+}
+
+func (h *Handler) GetProductsByIDs(w http.ResponseWriter, r *http.Request) {
+
 }

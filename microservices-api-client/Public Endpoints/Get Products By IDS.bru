@@ -1,0 +1,20 @@
+meta {
+  name: Get Products By IDS
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/api/products?ids=DQAAxpsBxJvrsWhNNmsN,DgACxpsBxJvrsWhN3WuJ
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ids: DQAAxpsBxJvrsWhNNmsN,DgACxpsBxJvrsWhN3WuJ
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
