@@ -58,6 +58,15 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 }
 
 func (s *service) BecomSeller(ctx context.Context, email string) error {
+	account, err := s.repository.GetAccountByEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+	
+	if account.Type == "seller" {
+		return errors.New("you're already a seller")
+	}
+	
 	return s.repository.UpdateAccountType(ctx, email)
 }
 
