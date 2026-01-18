@@ -3,16 +3,11 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
-	"net"
-	"os"
 
 	accpb "github.com/airlangga-hub/microservices/order/account_pb"
 	catpb "github.com/airlangga-hub/microservices/order/catalog_pb"
 	"github.com/airlangga-hub/microservices/order/pb"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Server struct {
@@ -22,41 +17,6 @@ type Server struct {
 	CatalogClient catpb.CatalogServiceClient
 }
 
-func ListenGrpc(service Service, port string) error {
-	accountConn, err := grpc.NewClient(os.Getenv("ACCOUNT_SERVICE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
-	}
-	defer accountConn.Close()
-
-	accountClient := accpb.NewAccountServiceClient(accountConn)
-
-	catalogConn, err := grpc.NewClient(os.Getenv("CATALOG_SERVICE_URL"), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return fmt.Errorf("ERROR: order server ListenGrpc (accpb.NewClient): %v", err)
-	}
-	defer catalogConn.Close()
-
-	catalogClient := catpb.NewCatalogServiceClient(catalogConn)
-
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		return fmt.Errorf("ERROR: order server ListenGrpc (net.Listen): %v", err)
-	}
-
-	s := grpc.NewServer()
-
-	pb.RegisterOrderServiceServer(
-		s,
-		&Server{
-			Svc:           service,
-			AccountClient: accountClient,
-			CatalogClient: catalogClient,
-		},
-	)
-
-	return s.Serve(lis)
-}
 
 func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.PostOrderResponse, error) {
 	_, err := s.AccountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: r.AccountId})

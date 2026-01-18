@@ -30,7 +30,7 @@ func main() {
 	orderURL := os.Getenv("ORDER_SERVICE_URL")
 
 	if accountURL == "" || catalogURL == "" || orderURL == "" || secret == "" || port == "" {
-		log.Fatal("One or more gateway environment variables are missing")
+		log.Fatalln("One or more gateway environment variables are missing")
 	}
 
 	// =====================
