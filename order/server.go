@@ -93,7 +93,7 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 			Id:         order.ID,
 			AccountId:  order.AccountID,
 			Products:   pbProducts,
-			TotalPrice: order.TotalPrice,
+			TotalPrice: order.TotalPrice / 100,
 			CreatedAt:  createdAt,
 		},
 	}, nil
