@@ -80,7 +80,7 @@ func main() {
 	mux.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))
 	mux.Handle("GET /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.GetOrdersByAccountID)))
 	// admin endpoints
-	mux.Handle("POST /admin/products", http.HandlerFunc(h.CreateProduct))
+	mux.HandleFunc("POST /admin/products", h.CreateProduct)
 
 	// http server
 	srv := http.Server{
