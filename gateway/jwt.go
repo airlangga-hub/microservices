@@ -4,29 +4,9 @@ import (
 	"errors"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
-
-func MakeJWTSeller(userID int32, email string, secret []byte) (string, error) {
-	token := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"exp":       time.Now().UTC().Add(time.Hour * 24).Unix(),
-			"sub":       email,
-			"user_type": "seller",
-			"user_id":   userID,
-		},
-	)
-
-	tokenStr, err := token.SignedString(secret)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenStr, nil
-}
 
 func VerifyJWT(authHeader string, secret []byte) (Account, error) {
 	tokenSlice := strings.Fields(authHeader)

@@ -11,7 +11,6 @@ import (
 type Service interface {
 	SignUp(ctx context.Context, email, password string) (string, error)
 	Login(ctx context.Context, email, password string) (string, error)
-	BecomSeller(ctx context.Context, email string) error
 	GetAccount(ctx context.Context, accountID int32) (Account, error)
 }
 
@@ -55,10 +54,6 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 	}
 
 	return MakeJWT(account.ID, account.Type, account.Email, s.secret)
-}
-
-func (s *service) BecomSeller(ctx context.Context, email string) error {	
-	return s.repository.UpdateAccountType(ctx, email)
 }
 
 func (s *service) GetAccount(ctx context.Context, accountID int32) (Account, error) {
