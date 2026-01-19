@@ -38,39 +38,28 @@ func main() {
 		log.Fatalln("One or more gateway environment variables are missing")
 	}
 
-	// =====================
 	// account client
-	// =====================
 	accountConn, err := grpc.NewClient(accountURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create accountConn: ", err)
 	}
-	defer accountConn.Close()
 	accountClient := accpb.NewAccountServiceClient(accountConn)
 
-	// =====================
 	// catalog client
-	// =====================
 	catalogConn, err := grpc.NewClient(catalogURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create catalogConn: ", err)
 	}
-	defer catalogConn.Close()
 	catalogClient := catpb.NewCatalogServiceClient(catalogConn)
 
-	// =====================
 	// order client
-	// =====================
 	orderConn, err := grpc.NewClient(orderURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create orderConn: ", err)
 	}
-	defer orderConn.Close()
 	orderClient := orderpb.NewOrderServiceClient(orderConn)
 
-	// =====================
 	// handler
-	// =====================
 	h := Handler{
 		Secret:        jwtSecret,
 		AccountClient: accountClient,
@@ -93,6 +82,7 @@ func main() {
 	// admin endpoints
 	mux.Handle("POST /admin/products", http.HandlerFunc(h.CreateProduct))
 
+	// http server
 	srv := http.Server{
 		Addr:    ":" + port,
 		Handler: mux,
@@ -112,17 +102,22 @@ func main() {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 		sig := <-sigChan
-		exitChan <- fmt.Errorf("Signal %v received, shutting down....\n", sig)
+		exitChan <- fmt.Errorf("No error, signal %v received, shutting down....\n", sig)
 	}()
 
+	// block main
 	err = <-exitChan
 
+	// start shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-
-	// shutdown
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Println("Error shutting down server: ", err)
+		log.Println("Error shutting down http server: ", err)
 	}
+
+	accountConn.Close()
+	catalogConn.Close()
+	orderConn.Close()
+
 	log.Println("Gracefully shutting down, error: ", err)
 }
