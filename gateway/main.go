@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	accpb "github.com/airlangga-hub/microservices/gateway/account_pb"
 	catpb "github.com/airlangga-hub/microservices/gateway/catalog_pb"
@@ -21,7 +26,7 @@ type Handler struct {
 
 func main() {
 	port := os.Getenv("PORT")
-	
+
 	secret := os.Getenv("JWT_SECRET")
 	jwtSecret := []byte(secret)
 
@@ -73,17 +78,51 @@ func main() {
 		OrderClient:   orderClient,
 	}
 
-	// public endpoints
-	http.HandleFunc("POST /api/signup", h.SignUp)
-	http.HandleFunc("POST /api/login", h.Login)
-	http.HandleFunc("GET /api/products", h.GetProducts)
-	http.HandleFunc("GET /api/products/{id}", h.GetProductByID)
-	http.HandleFunc("GET /api/products/search", h.SearchProducts)
-	// buyer endpoints
-	http.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))
-	http.Handle("GET /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.GetOrdersByAccountID)))
-	// admin endpoints
-	http.Handle("POST /admin/products", http.HandlerFunc(h.CreateProduct))
+	// mux
+	mux := http.NewServeMux()
 
-	log.Fatalln(http.ListenAndServe(port, nil))
+	// public endpoints
+	mux.HandleFunc("POST /api/signup", h.SignUp)
+	mux.HandleFunc("POST /api/login", h.Login)
+	mux.HandleFunc("GET /api/products", h.GetProducts)
+	mux.HandleFunc("GET /api/products/{id}", h.GetProductByID)
+	mux.HandleFunc("GET /api/products/search", h.SearchProducts)
+	// buyer endpoints
+	mux.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))
+	mux.Handle("GET /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.GetOrdersByAccountID)))
+	// admin endpoints
+	mux.Handle("POST /admin/products", http.HandlerFunc(h.CreateProduct))
+
+	srv := http.Server{
+		Addr:    ":" + port,
+		Handler: mux,
+	}
+
+	// graceful shutdown
+	exitChan := make(chan error, 1)
+
+	go func() {
+		log.Println("Listening on port: ", port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			exitChan <- err
+		}
+	}()
+
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+		sig := <-sigChan
+		exitChan <- fmt.Errorf("Signal %v received, shutting down....\n", sig)
+	}()
+
+	err = <-exitChan
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+
+	// shutdown
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Println("Error shutting down server: ", err)
+	}
+	log.Println("Gracefully shutting down, error: ", err)
 }
