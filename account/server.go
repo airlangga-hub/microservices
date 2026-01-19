@@ -38,6 +38,5 @@ func (s *Server) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.G
 	return &pb.GetAccountResponse{
 		AccountId: account.ID,
 		Email:     account.Email,
-		Type:      account.Type,
 	}, nil
 }

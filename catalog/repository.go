@@ -38,7 +38,6 @@ type productDocument struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Price       int64  `json:"price"`
-	SellerID    int32  `json:"seller_id"`
 }
 
 const ESIndex = "catalog"

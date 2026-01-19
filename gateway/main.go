@@ -64,7 +64,7 @@ func main() {
 	orderClient := orderpb.NewOrderServiceClient(orderConn)
 
 	// =====================
-	// config
+	// handler
 	// =====================
 	h := Handler{
 		Secret:        jwtSecret,
@@ -82,7 +82,7 @@ func main() {
 	// buyer endpoints
 	http.Handle("POST /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.CreateOrder)))
 	http.Handle("GET /api/order", h.AuthorizeMiddleware(http.HandlerFunc(h.GetOrdersByAccountID)))
-	// seller endpoints
+	// admin endpoints
 	http.Handle("POST /admin/products", http.HandlerFunc(h.CreateProduct))
 
 	log.Fatalln(http.ListenAndServe(port, nil))

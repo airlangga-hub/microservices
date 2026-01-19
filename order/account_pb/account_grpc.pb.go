@@ -19,10 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AccountService_SignUp_FullMethodName      = "/pb.AccountService/SignUp"
-	AccountService_Login_FullMethodName       = "/pb.AccountService/Login"
-	AccountService_GetAccount_FullMethodName  = "/pb.AccountService/GetAccount"
-	AccountService_BecomSeller_FullMethodName = "/pb.AccountService/BecomSeller"
+	AccountService_SignUp_FullMethodName     = "/pb.AccountService/SignUp"
+	AccountService_Login_FullMethodName      = "/pb.AccountService/Login"
+	AccountService_GetAccount_FullMethodName = "/pb.AccountService/GetAccount"
 )
 
 // AccountServiceClient is the client API for AccountService service.
@@ -32,7 +31,6 @@ type AccountServiceClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*Token, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Token, error)
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
-	BecomSeller(ctx context.Context, in *BecomeSellerRequest, opts ...grpc.CallOption) (*BecomeSellerResponse, error)
 }
 
 type accountServiceClient struct {
@@ -73,16 +71,6 @@ func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountReq
 	return out, nil
 }
 
-func (c *accountServiceClient) BecomSeller(ctx context.Context, in *BecomeSellerRequest, opts ...grpc.CallOption) (*BecomeSellerResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BecomeSellerResponse)
-	err := c.cc.Invoke(ctx, AccountService_BecomSeller_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AccountServiceServer is the server API for AccountService service.
 // All implementations must embed UnimplementedAccountServiceServer
 // for forward compatibility.
@@ -90,7 +78,6 @@ type AccountServiceServer interface {
 	SignUp(context.Context, *SignUpRequest) (*Token, error)
 	Login(context.Context, *LoginRequest) (*Token, error)
 	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
-	BecomSeller(context.Context, *BecomeSellerRequest) (*BecomeSellerResponse, error)
 	mustEmbedUnimplementedAccountServiceServer()
 }
 
@@ -109,9 +96,6 @@ func (UnimplementedAccountServiceServer) Login(context.Context, *LoginRequest) (
 }
 func (UnimplementedAccountServiceServer) GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAccount not implemented")
-}
-func (UnimplementedAccountServiceServer) BecomSeller(context.Context, *BecomeSellerRequest) (*BecomeSellerResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method BecomSeller not implemented")
 }
 func (UnimplementedAccountServiceServer) mustEmbedUnimplementedAccountServiceServer() {}
 func (UnimplementedAccountServiceServer) testEmbeddedByValue()                        {}
@@ -188,24 +172,6 @@ func _AccountService_GetAccount_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccountService_BecomSeller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BecomeSellerRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServiceServer).BecomSeller(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AccountService_BecomSeller_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).BecomSeller(ctx, req.(*BecomeSellerRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -224,10 +190,6 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccount",
 			Handler:    _AccountService_GetAccount_Handler,
-		},
-		{
-			MethodName: "BecomSeller",
-			Handler:    _AccountService_BecomSeller_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -52,9 +52,9 @@ func (r *repository) CreateAccount(ctx context.Context, email, hashedPassword st
 		(email, hashed_password)
 		VALUES
 		($1, $2)
-		RETURNING id, email, type;`,
+		RETURNING id, email;`,
 		email, hashedPassword,
-	).Scan(&a.ID, &a.Email, &a.Type); err != nil {
+	).Scan(&a.ID, &a.Email); err != nil {
 		log.Println("ERROR: account repo CreateAccount: ", err)
 		return Account{}, errors.New("error creating account")
 	}
@@ -70,8 +70,7 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 		`SELECT
 			id,
 			email,
-			hashed_password,
-			type
+			hashed_password
 		FROM accounts
 		WHERE email = $1;`,
 		email,
@@ -79,7 +78,6 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (Accou
 		&account.ID,
 		&account.Email,
 		&account.HashedPassword,
-		&account.Type,
 	); err != nil {
 		log.Println("ERROR: account repo GetAccountByEmail: ", err)
 		return Account{}, errors.New("unauthorized user")
@@ -95,15 +93,13 @@ func (r *repository) GetAccountByID(ctx context.Context, accountID int32) (Accou
 		ctx,
 		`SELECT
 			id,
-			email,
-			type
+			email
 		FROM accounts
 		WHERE id = $1;`,
 		accountID,
 	).Scan(
 		&account.ID,
 		&account.Email,
-		&account.Type,
 	); err != nil {
 		log.Println("ERROR: account repo GetAccountByID: ", err)
 		return Account{}, errors.New("account not found")
