@@ -15,6 +15,11 @@ func SendEmail(msg amqp.Delivery) error {
 		return fmt.Errorf("ERROR email SendEmail failed to unmarshal order: %w", err)
 	}
 
+	var itemsList string
+	for _, p := range order.Products {
+		itemsList += fmt.Sprintf("- %s (Qty: %d) - $%d\n", p.Name, p.Quantity, p.Price)
+	}
+
 	senderEmail := os.Getenv("SMTP_EMAIL")
 	password := os.Getenv("SMTP_PASSWORD")
 	smtpServer := "smtp.gmail.com"
@@ -22,12 +27,16 @@ func SendEmail(msg amqp.Delivery) error {
 
 	recipientEmail := "customer@example.com"
 
-	subject := "Subject: Payment Processed!\n"
-	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	body := fmt.Sprintf("<h2>Order #%d Processed</h2><p>Total Price: %d</p>",
-		order.ID, order.TotalPrice)
+	subject := "Subject: Order Confirmation #" + fmt.Sprint(order.ID) + "\n"
+	body := fmt.Sprintf(
+		"Thank you for your order!\n\n"+
+			"Items:\n%s\n"+
+			"Total: $%d\n",
+		itemsList,
+		order.TotalPrice,
+	)
 
-	message := []byte(subject + mime + body)
+	message := []byte(subject + "\n" + body)
 
 	auth := smtp.PlainAuth("", senderEmail, password, smtpServer)
 	address := smtpServer + ":" + smtpPort
