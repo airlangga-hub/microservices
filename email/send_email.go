@@ -8,7 +8,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func SendEmail(msg amqp.Delivery, senderEmail, senderPassword string) error {
+func SendEmail(msg amqp.Delivery, senderEmail, senderPassword, recipientEmail string) error {
 	var order Order
 	if err := json.Unmarshal(msg.Body, &order); err != nil {
 		return fmt.Errorf("ERROR email SendEmail failed to unmarshal order: %w", err)
@@ -21,8 +21,6 @@ func SendEmail(msg amqp.Delivery, senderEmail, senderPassword string) error {
 
 	smtpServer := "smtp.gmail.com"
 	smtpPort := "587"
-
-	recipientEmail := "customer@example.com"
 
 	subject := "Subject: Order Confirmation #" + fmt.Sprint(order.ID) + "\n"
 	body := fmt.Sprintf(

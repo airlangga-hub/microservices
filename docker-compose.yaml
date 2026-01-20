@@ -66,7 +66,7 @@ services:
     ports:
       - "9092:9092"
     restart: on-failure
-    
+
   email:
     build:
       context: ./email
@@ -77,10 +77,11 @@ services:
     environment:
       SMTP_EMAIL: ${SMTP_EMAIL}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+      RECIPIENT_EMAIL: ${RECIPIENT_EMAIL}
       EMAIL_QUEUE_NAME: ${EMAIL_QUEUE_NAME}
       AMQP_URL: ${AMQP_URL}
     restart: on-failure
-    
+
   rabbitmq:
     image: rabbitmq:3.13-alpine
     environment:
@@ -119,7 +120,11 @@ services:
     ports:
       - "9200:9200"
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      test:
+        [
+          "CMD-SHELL",
+          'curl -s http://localhost:9200/_cluster/health | grep -vq ''"status":"red"''',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -133,7 +138,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - order_pgdata:/var/lib/postgresql/data
-      - ./order/up.sql:/docker-entrypoint-initdb.d/1.sql 
+      - ./order/up.sql:/docker-entrypoint-initdb.d/1.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
       interval: 5s

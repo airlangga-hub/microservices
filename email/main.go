@@ -15,8 +15,9 @@ func main() {
 
 	senderEmail := os.Getenv("SMTP_EMAIL")
 	senderPassword := os.Getenv("SMTP_PASSWORD")
+	recipientEmail := os.Getenv("RECIPIENT_EMAIL")
 
-	if emailQueueName == "" || amqpURL == "" || senderEmail == "" || senderPassword == "" {
+	if emailQueueName == "" || amqpURL == "" || senderEmail == "" || senderPassword == "" || recipientEmail == "" {
 		log.Fatalln("FATAL email main environment variable missing")
 	}
 
@@ -43,7 +44,7 @@ func main() {
 
 	go func() {
 		for msg := range messages {
-			SendEmail(msg, senderEmail, senderPassword)
+			SendEmail(msg, senderEmail, senderPassword, recipientEmail)
 		}
 	}()
 
