@@ -18,10 +18,10 @@ import (
 func main() {
 	dbUrl := os.Getenv("ORDER_DB_URL")
 	port := os.Getenv("ORDER_PORT")
-	
+
 	accountURL := os.Getenv("ACCOUNT_SERVICE_URL")
 	catalogURL := os.Getenv("CATALOG_SERVICE_URL")
-	
+
 	if accountURL == "" || catalogURL == "" || port == "" || dbUrl == "" {
 		log.Fatalln("One or more order environment variables are missing")
 	}
@@ -31,10 +31,8 @@ func main() {
 		log.Fatalf("ERROR: order main: couldn't create repository: %v", err)
 	}
 	defer repository.Close()
-	
-	// =====================
+
 	// account client
-	// =====================
 	accountConn, err := grpc.NewClient(accountURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create accountConn: ", err)
@@ -42,9 +40,7 @@ func main() {
 	defer accountConn.Close()
 	accountClient := accpb.NewAccountServiceClient(accountConn)
 
-	// =====================
 	// catalog client
-	// =====================
 	catalogConn, err := grpc.NewClient(catalogURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("FATAL: failed to create catalogConn: ", err)
@@ -52,10 +48,10 @@ func main() {
 	defer catalogConn.Close()
 	catalogClient := catpb.NewCatalogServiceClient(catalogConn)
 
-	service := NewService(repository)
-
+	// grpc server
+	service := NewService(repository, accountClient, catalogClient)
 	s := grpc.NewServer()
-	pb.RegisterOrderServiceServer(s, &Server{Svc: service, AccountClient: accountClient, CatalogClient: catalogClient})
+	pb.RegisterOrderServiceServer(s, &Server{Svc: service})
 
 	exitChan := make(chan error, 1)
 

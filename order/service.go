@@ -1,6 +1,13 @@
 package main
 
-import "context"
+import (
+	"context"
+	"errors"
+	"log"
+
+	accpb "github.com/airlangga-hub/microservices/order/account_pb"
+	catpb "github.com/airlangga-hub/microservices/order/catalog_pb"
+)
 
 type Service interface {
 	PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error)
@@ -8,26 +15,143 @@ type Service interface {
 }
 
 type service struct {
-	repository Repository
+	repository    Repository
+	accountClient accpb.AccountServiceClient
+	catalogClient catpb.CatalogServiceClient
 }
 
-func NewService(r Repository) Service {
-	return &service{r}
+func NewService(r Repository, accountClient accpb.AccountServiceClient, catalogClient catpb.CatalogServiceClient) Service {
+	return &service{
+		repository:    r,
+		accountClient: accountClient,
+		catalogClient: catalogClient,
+	}
 }
 
 func (s *service) PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error) {
-	order := Order{
-		AccountID: accountID,
-		Products:  products,
+	_, err := s.accountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: accountID})
+	if err != nil {
+		return Order{}, err
 	}
 
-	for _, p := range products {
-		order.TotalPrice += p.Price * int64(p.Quantity)
+	productIDs := make([]string, len(products))
+	mapIdQty := make(map[string]int32)
+
+	for i, p := range products {
+		productIDs[i] = p.ID
+		mapIdQty[p.ID] = p.Quantity
+	}
+
+	catalogRes, err := s.catalogClient.GetProducts(
+		ctx,
+		&catpb.GetProductsRequest{
+			Offset: 0,
+			Limit:  0,
+			Ids:    productIDs,
+			Query:  "",
+		},
+	)
+	if err != nil {
+		return Order{}, err
+	}
+
+	orderedProducts := make([]OrderedProduct, len(catalogRes.Products))
+	var totalPrice int64
+
+	for i, p := range catalogRes.Products {
+		if qty, exist := mapIdQty[p.Id]; exist {
+			orderedProducts[i] = OrderedProduct{
+				ID:          p.Id,
+				Name:        p.Name,
+				Description: p.Description,
+				Price:       p.Price,
+				Quantity:    qty,
+			}
+			totalPrice += p.Price * int64(qty)
+		}
+	}
+
+	if len(orderedProducts) != len(products) {
+		log.Println("ERROR: order server PostOrder (check length): ", err)
+		return Order{}, errors.New("one or more products not found")
+	}
+
+	order := Order{
+		AccountID:  accountID,
+		Products:   orderedProducts,
+		TotalPrice: totalPrice,
 	}
 
 	return s.repository.CreateOrder(ctx, order)
 }
 
 func (s *service) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error) {
-	return s.repository.GetOrdersByAccountID(ctx, accountID)
+	_, err := s.accountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: accountID})
+	if err != nil {
+		return nil, err
+	}
+
+	// the products inside each order only contain product_id and quantity
+	// we need to get the name, description, price from catpb
+	orders, err := s.repository.GetOrdersByAccountID(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	productIdSet := make(map[string]struct{})
+
+	for _, order := range orders {
+		for _, product := range order.Products {
+			productIdSet[product.ID] = struct{}{}
+		}
+	}
+
+	productIDs := make([]string, 0, len(productIdSet))
+
+	for productID := range productIdSet {
+		productIDs = append(productIDs, productID)
+	}
+
+	catalogRes, err := s.catalogClient.GetProducts(
+		ctx,
+		&catpb.GetProductsRequest{
+			Offset: 0,
+			Limit:  0,
+			Ids:    productIDs,
+			Query:  "",
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	mapCatalogProducts := make(map[string]*catpb.Product)
+
+	for _, cp := range catalogRes.Products {
+		mapCatalogProducts[cp.Id] = cp
+	}
+
+	for _, order := range orders {
+		orderedProducts := make([]OrderedProduct, len(order.Products))
+		for j, product := range order.Products {
+			if cp, exist := mapCatalogProducts[product.ID]; exist {
+				orderedProducts[j] = OrderedProduct{
+					ID:          cp.Id,
+					Name:        cp.Name,
+					Description: cp.Description,
+					Price:       cp.Price,
+					Quantity:    product.Quantity,
+				}
+			}
+		}
+
+		if len(order.Products) != len(orderedProducts) {
+			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
+			return nil, errors.New("failed to find orders, one or more products not found")
+		}
+		
+		order.Products = orderedProducts
+	}
+
+	return orders, nil
 }
