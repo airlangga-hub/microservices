@@ -44,7 +44,9 @@ func main() {
 
 	go func() {
 		for msg := range messages {
-			SendEmail(msg, senderEmail, senderPassword, recipientEmail)
+			if err := SendEmail(msg, senderEmail, senderPassword, recipientEmail); err != nil {
+				log.Println("ERROR email main SendEmail:", err)
+			}
 		}
 	}()
 
