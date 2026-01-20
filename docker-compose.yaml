@@ -6,11 +6,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      ACCOUNT_SERVICE_URL: account:9090
-      CATALOG_SERVICE_URL: catalog:9091
-      ORDER_SERVICE_URL: order:9092
-      PORT: "8080"
-      JWT_SECRET: secret
+      ACCOUNT_SERVICE_URL: ${ACCOUNT_SERVICE_URL}
+      CATALOG_SERVICE_URL: ${CATALOG_SERVICE_URL}
+      ORDER_SERVICE_URL: ${ORDER_SERVICE_URL}
+      PORT: ${PORT}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       account:
         condition: service_started
@@ -28,9 +28,9 @@ services:
       account_db:
         condition: service_healthy
     environment:
-      ACCOUNT_DB_URL: postgres://pgdb:123456@account_db:5432/pgdb?sslmode=disable
-      ACCOUNT_PORT: :9090
-      JWT_SECRET: secret
+      ACCOUNT_DB_URL: ${ACCOUNT_DB_URL}
+      ACCOUNT_PORT: ${ACCOUNT_PORT}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "9090:9090"
     restart: on-failure
@@ -43,8 +43,8 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      CATALOG_PORT: :9091
+      ELASTICSEARCH_URL: ${ELASTICSEARCH_URL}
+      CATALOG_PORT: ${CATALOG_PORT}
     ports:
       - "9091:9091"
     restart: on-failure
@@ -57,12 +57,12 @@ services:
       order_db:
         condition: service_healthy
     environment:
-      ORDER_DB_URL: postgres://pgdb:123456@order_db:5432/pgdb?sslmode=disable
-      ORDER_PORT: :9092
-      ACCOUNT_SERVICE_URL: account:9090
-      CATALOG_SERVICE_URL: catalog:9091
-      EMAIL_QUEUE_NAME: email
-      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+      ORDER_DB_URL: ${ORDER_DB_URL}
+      ORDER_PORT: ${ORDER_PORT}
+      ACCOUNT_SERVICE_URL: ${ACCOUNT_SERVICE_URL}
+      CATALOG_SERVICE_URL: ${CATALOG_SERVICE_URL}
+      EMAIL_QUEUE_NAME: ${EMAIL_QUEUE_NAME}
+      AMQP_URL: ${AMQP_URL}
     ports:
       - "9092:9092"
     restart: on-failure
@@ -70,9 +70,9 @@ services:
   account_db:
     image: postgres:15
     environment:
-      POSTGRES_DB: pgdb
-      POSTGRES_USER: pgdb
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - account_pgdata:/var/lib/postgresql/data
       - ./account/up.sql:/docker-entrypoint-initdb.d/1.sql
@@ -87,7 +87,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m # Reduced for local stability
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
@@ -102,9 +102,9 @@ services:
   order_db:
     image: postgres:15
     environment:
-      POSTGRES_DB: pgdb
-      POSTGRES_USER: pgdb
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - order_pgdata:/var/lib/postgresql/data
       - ./order/up.sql:/docker-entrypoint-initdb.d/1.sql 
