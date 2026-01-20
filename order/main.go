@@ -35,7 +35,7 @@ func main() {
 		log.Fatalln("FATAL order main couldn't create publisher:", err)
 	}
 	defer publisher.Connection.Close()
-	// declare channel
+	// declare queue
 	_, err = publisher.Channel.QueueDeclare(emailQueueName, true, false, false, false, nil)
 	if err != nil {
 		log.Println("FATAL order main couldn't declare queue:", err)
