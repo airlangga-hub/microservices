@@ -53,6 +53,7 @@ func main() {
 	s := grpc.NewServer()
 	pb.RegisterOrderServiceServer(s, &Server{Svc: service})
 
+	// graceful exit
 	exitChan := make(chan error, 1)
 
 	go func() {
@@ -63,9 +64,12 @@ func main() {
 	}()
 
 	go func() {
-		lis, _ := net.Listen("tcp", port)
-		err := s.Serve(lis)
-		if err != nil && err != grpc.ErrServerStopped {
+		lis, err := net.Listen("tcp", port)
+		if err != nil {
+			exitChan <- fmt.Errorf("error tcp listen: %v", err)
+		}
+
+		if err := s.Serve(lis); err != nil && err != grpc.ErrServerStopped {
 			exitChan <- fmt.Errorf("grpc serve error: %v", err)
 		}
 	}()
