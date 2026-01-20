@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -12,7 +15,7 @@ func main() {
 	if emailQueueName == "" || amqpURL == "" {
 		log.Fatalln("FATAL email main environment variable missing")
 	}
-	
+
 	conn, err := amqp.Dial(amqpURL)
 	if err != nil {
 		log.Fatalln("FATAL failed to connect amqp:", err)
@@ -24,10 +27,23 @@ func main() {
 		log.Fatalln("FATAL failed to create amqp channel:", err)
 	}
 	defer channel.Close()
-	
+
 	messages, err := channel.Consume(emailQueueName, "email-consumer", true, false, false, false, nil)
 	if err != nil {
 		log.Println("ERROR email main couldn't consume:", err)
 		return
 	}
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		for msg := range messages {
+			HandleMessage(msg)
+		}
+	}()
+
+	sig := <-sigChan
+
+	log.Printf("Signal %v received, exiting email service....\n", sig)
 }
