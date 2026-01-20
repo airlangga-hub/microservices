@@ -16,7 +16,7 @@ func SendEmail(msg amqp.Delivery, senderEmail, senderPassword, recipientEmail st
 
 	var itemsList string
 	for _, p := range order.Products {
-		itemsList += fmt.Sprintf("- %s (Qty: %d) - $%d\n", p.Name, p.Quantity, p.Price)
+		itemsList += fmt.Sprintf("- %s (Qty: %d) - $%.2f\n", p.Name, p.Quantity, float64(p.Price)/100)
 	}
 
 	smtpServer := "smtp.gmail.com"
@@ -26,9 +26,9 @@ func SendEmail(msg amqp.Delivery, senderEmail, senderPassword, recipientEmail st
 	body := fmt.Sprintf(
 		"Thank you for your order!\n\n"+
 			"Items:\n%s\n"+
-			"Total: $%d\n",
+			"Total: $%.2f\n",
 		itemsList,
-		order.TotalPrice,
+		float64(order.TotalPrice)/100,
 	)
 
 	message := []byte(subject + "\n" + body)
