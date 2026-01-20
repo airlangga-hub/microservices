@@ -61,6 +61,8 @@ services:
       ORDER_PORT: :9092
       ACCOUNT_SERVICE_URL: account:9090
       CATALOG_SERVICE_URL: catalog:9091
+      EMAIL_QUEUE_NAME: email
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
     ports:
       - "9092:9092"
     restart: on-failure

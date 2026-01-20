@@ -21,14 +21,31 @@ func main() {
 
 	accountURL := os.Getenv("ACCOUNT_SERVICE_URL")
 	catalogURL := os.Getenv("CATALOG_SERVICE_URL")
+	
+	emailQueueName := os.Getenv("EMAIL_QUEUE_NAME")
+	amqpURL := os.Getenv("AMQP_URL")
 
-	if accountURL == "" || catalogURL == "" || port == "" || dbUrl == "" {
+	if accountURL == "" || catalogURL == "" || port == "" || dbUrl == "" || emailQueueName == "" || amqpURL == "" {
 		log.Fatalln("One or more order environment variables are missing")
 	}
-
+	
+	// publisher amqp
+	publisher, err := NewPublisher(amqpURL, emailQueueName)
+	if err != nil {
+		log.Fatalln("FATAL order main couldn't create publisher:", err)
+	}
+	defer publisher.Connection.Close()
+	// declare channel
+	_, err = publisher.Channel.QueueDeclare(emailQueueName, true, false, false, false, nil)
+	if err != nil {
+		log.Println("FATAL order main couldn't declare queue:", err)
+		return
+	}
+	
+	// repository
 	repository, err := NewRepository(dbUrl)
 	if err != nil {
-		log.Fatalf("ERROR: order main: couldn't create repository: %v", err)
+		log.Fatalln("FATAL order main couldn't create repository:", err)
 	}
 	defer repository.Close()
 
@@ -49,7 +66,7 @@ func main() {
 	catalogClient := catpb.NewCatalogServiceClient(catalogConn)
 
 	// grpc server
-	service := NewService(repository, accountClient, catalogClient)
+	service := NewService(repository, accountClient, catalogClient, publisher)
 	s := grpc.NewServer()
 	pb.RegisterOrderServiceServer(s, &Server{Svc: service})
 

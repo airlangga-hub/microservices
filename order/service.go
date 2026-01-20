@@ -18,13 +18,15 @@ type service struct {
 	repository    Repository
 	accountClient accpb.AccountServiceClient
 	catalogClient catpb.CatalogServiceClient
+	publisher     *Publisher
 }
 
-func NewService(r Repository, accountClient accpb.AccountServiceClient, catalogClient catpb.CatalogServiceClient) Service {
+func NewService(r Repository, accountClient accpb.AccountServiceClient, catalogClient catpb.CatalogServiceClient, publisher *Publisher) Service {
 	return &service{
 		repository:    r,
 		accountClient: accountClient,
 		catalogClient: catalogClient,
+		publisher:     publisher,
 	}
 }
 
@@ -82,7 +84,14 @@ func (s *service) PostOrder(ctx context.Context, accountID int32, products []Ord
 		TotalPrice: totalPrice,
 	}
 
-	return s.repository.CreateOrder(ctx, order)
+	order, err = s.repository.CreateOrder(ctx, order)
+	if err != nil {
+		return Order{}, err
+	}
+
+	s.publisher.Publish(order)
+	
+	return order, nil
 }
 
 func (s *service) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error) {
@@ -149,7 +158,7 @@ func (s *service) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]
 			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
 			return nil, errors.New("failed to find orders, one or more products not found")
 		}
-		
+
 		order.Products = orderedProducts
 	}
 
