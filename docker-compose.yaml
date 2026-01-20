@@ -87,7 +87,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms64m -Xmx64m
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
