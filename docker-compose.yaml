@@ -66,6 +66,32 @@ services:
     ports:
       - "9092:9092"
     restart: on-failure
+    
+  email:
+    build:
+      context: ./email
+      dockerfile: Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SMTP_EMAIL: ${SMTP_EMAIL}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      EMAIL_QUEUE_NAME: ${EMAIL_QUEUE_NAME}
+      AMQP_URL: ${AMQP_URL}
+    restart: on-failure
+    
+  rabbitmq:
+    image: rabbitmq:3.13-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   account_db:
     image: postgres:15

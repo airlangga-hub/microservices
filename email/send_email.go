@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/smtp"
-	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func SendEmail(msg amqp.Delivery) error {
+func SendEmail(msg amqp.Delivery, senderEmail, senderPassword string) error {
 	var order Order
 	if err := json.Unmarshal(msg.Body, &order); err != nil {
 		return fmt.Errorf("ERROR email SendEmail failed to unmarshal order: %w", err)
@@ -20,8 +19,6 @@ func SendEmail(msg amqp.Delivery) error {
 		itemsList += fmt.Sprintf("- %s (Qty: %d) - $%d\n", p.Name, p.Quantity, p.Price)
 	}
 
-	senderEmail := os.Getenv("SMTP_EMAIL")
-	password := os.Getenv("SMTP_PASSWORD")
 	smtpServer := "smtp.gmail.com"
 	smtpPort := "587"
 
@@ -38,7 +35,7 @@ func SendEmail(msg amqp.Delivery) error {
 
 	message := []byte(subject + "\n" + body)
 
-	auth := smtp.PlainAuth("", senderEmail, password, smtpServer)
+	auth := smtp.PlainAuth("", senderEmail, senderPassword, smtpServer)
 	address := smtpServer + ":" + smtpPort
 
 	err := smtp.SendMail(address, auth, senderEmail, []string{recipientEmail}, message)
