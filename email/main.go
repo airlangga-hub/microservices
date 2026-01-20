@@ -39,7 +39,7 @@ func main() {
 
 	go func() {
 		for msg := range messages {
-			HandleMessage(msg)
+			SendEmail(msg)
 		}
 	}()
 
