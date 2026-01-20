@@ -56,6 +56,8 @@ services:
     depends_on:
       order_db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       ORDER_DB_URL: ${ORDER_DB_URL}
       ORDER_PORT: ${ORDER_PORT}
