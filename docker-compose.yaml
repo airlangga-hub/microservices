@@ -105,7 +105,7 @@ services:
       - account_pgdata:/var/lib/postgresql/data
       - ./account/up.sql:/docker-entrypoint-initdb.d/1.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -141,7 +141,7 @@ services:
       - order_pgdata:/var/lib/postgresql/data
       - ./order/up.sql:/docker-entrypoint-initdb.d/1.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pgdb -d pgdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
