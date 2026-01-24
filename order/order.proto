@@ -21,7 +21,8 @@ message Order {
 
 message PostOrderRequest {
     int32 account_id = 1;
-    repeated OrderedProduct products = 2;
+    string account_email = 2;
+    repeated OrderedProduct products = 3;
 }
 
 message PostOrderResponse {

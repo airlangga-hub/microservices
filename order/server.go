@@ -22,7 +22,7 @@ func (s *Server) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb.Pos
 		}
 	}
 
-	order, err := s.Svc.PostOrder(ctx, r.AccountId, products)
+	order, err := s.Svc.PostOrder(ctx, r.AccountEmail, r.AccountId, products)
 	if err != nil {
 		return nil, err
 	}

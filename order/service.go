@@ -10,7 +10,7 @@ import (
 )
 
 type Service interface {
-	PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error)
+	PostOrder(ctx context.Context, accountEmail string, accountID int32, products []OrderedProduct) (Order, error)
 	GetOrdersByAccountID(ctx context.Context, accountID int32) ([]*Order, error)
 }
 
@@ -30,7 +30,7 @@ func NewService(r Repository, accountClient accpb.AccountServiceClient, catalogC
 	}
 }
 
-func (s *service) PostOrder(ctx context.Context, accountID int32, products []OrderedProduct) (Order, error) {
+func (s *service) PostOrder(ctx context.Context, accountEmail string, accountID int32, products []OrderedProduct) (Order, error) {
 	_, err := s.accountClient.GetAccount(ctx, &accpb.GetAccountRequest{AccountId: accountID})
 	if err != nil {
 		return Order{}, err
@@ -89,8 +89,14 @@ func (s *service) PostOrder(ctx context.Context, accountID int32, products []Ord
 		return Order{}, err
 	}
 
-	s.publisher.Publish(order)
-	
+	s.publisher.Publish(OrderMessage{
+		ID:           order.ID,
+		AccountEmail: accountEmail,
+		Products:     order.Products,
+		TotalPrice:   order.TotalPrice,
+		CreatedAt:    order.CreatedAt,
+	})
+
 	return order, nil
 }
 

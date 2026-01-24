@@ -17,3 +17,11 @@ type Order struct {
 	TotalPrice int64            `json:"total_price"`
 	CreatedAt  time.Time        `json:"created_at"`
 }
+
+type OrderMessage struct {
+	ID           int32            `json:"id"`
+	AccountEmail string           `json:"account_email"`
+	Products     []OrderedProduct `json:"products"`
+	TotalPrice   int64            `json:"total_price"`
+	CreatedAt    time.Time        `json:"created_at"`
+}

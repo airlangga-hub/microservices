@@ -11,9 +11,9 @@ type OrderedProduct struct {
 }
 
 type Order struct {
-	ID         int32            `json:"id"`
-	AccountID  int32            `json:"account_id"`
-	Products   []OrderedProduct `json:"products"`
-	TotalPrice int64            `json:"total_price"`
-	CreatedAt  time.Time        `json:"created_at"`
+	ID           int32            `json:"id"`
+	AccountEmail string           `json:"account_email"`
+	Products     []OrderedProduct `json:"products"`
+	TotalPrice   int64            `json:"total_price"`
+	CreatedAt    time.Time        `json:"created_at"`
 }
