@@ -28,9 +28,17 @@ func main() {
 
 	channel, err := conn.Channel()
 	if err != nil {
-		log.Fatalln("FATAL failed to create amqp channel:", err)
+		log.Println("FATAL failed to create amqp channel:", err)
+		return
 	}
 	defer channel.Close()
+
+	// declare queue (idempotent)
+	_, err = channel.QueueDeclare(emailQueueName, true, false, false, false, nil)
+	if err != nil {
+		log.Println("FATAL order main couldn't declare queue:", err)
+		return
+	}
 
 	messages, err := channel.Consume(emailQueueName, "email-consumer", true, false, false, false, nil)
 	if err != nil {

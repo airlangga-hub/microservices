@@ -11,7 +11,7 @@ import (
 
 func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		Email    string `json:"email"`
+		Email    string `json:"email"` //email must be valid because email service will send message to this email
 		Password string `json:"password"`
 	}
 

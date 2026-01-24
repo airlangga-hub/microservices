@@ -74,7 +74,7 @@ func (s *service) PostOrder(ctx context.Context, accountEmail string, accountID 
 	}
 
 	if len(orderedProducts) != len(products) {
-		log.Println("ERROR: order server PostOrder (check length): ", err)
+		log.Println("ERROR: order service PostOrder (check length): len(orderedProducts) != len(products)")
 		return Order{}, errors.New("one or more products not found")
 	}
 
@@ -161,7 +161,7 @@ func (s *service) GetOrdersByAccountID(ctx context.Context, accountID int32) ([]
 		}
 
 		if len(order.Products) != len(orderedProducts) {
-			log.Println("ERROR: order server GetOrdersByAccountID (check length): ", err)
+			log.Println("ERROR: order service GetOrdersByAccountID (check length): len(order.Products) != len(orderedProducts)")
 			return nil, errors.New("failed to find orders, one or more products not found")
 		}
 

@@ -38,7 +38,7 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), time.Second*5)
 	defer cancel()
 
-	res, err := h.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountId: account.ID, Products: pbProducts})
+	res, err := h.OrderClient.PostOrder(ctx, &orderpb.PostOrderRequest{AccountEmail: account.Email, AccountId: account.ID, Products: pbProducts})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

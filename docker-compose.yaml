@@ -93,6 +93,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   account_db:
@@ -109,6 +110,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   elasticsearch:
@@ -129,6 +131,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 10s
     restart: unless-stopped
 
   order_db:
@@ -145,6 +148,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
     restart: unless-stopped
 
 volumes:
