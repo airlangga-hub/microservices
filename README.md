@@ -7,11 +7,11 @@ This project simulates an e-commerce platform. It does the following:
     * Get Products By IDs
     * Get Product By ID
     * Search Product
-* BUYER ENDPOINTs
+* BUYER ENDPOINTS
     * Account Create Order
-    * Account View Orders
-* ADMIN ENDPOINTs
-    * Create Orders
+    * Account Get Orders
+* ADMIN ENDPOINTS
+    * Create Products
 
 This project uses `Microservices + Pub/Sub architecture`, completely written in Go.
 
