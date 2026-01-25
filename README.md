@@ -35,8 +35,15 @@ Below is an overview of the whole program.
 
 ![topology](./microservices.png)
 
+# Pre-requisites
+You need these installed on your local machine (follow the docs):
+* [Go](https://go.dev/doc/install)
+* [Protobuf Compiler](https://protobuf.dev/installation/)
+* [Go Plugins for Protobuf](https://grpc.io/docs/languages/go/quickstart/)
+* [Docker Desktop](https://docs.docker.com/desktop/)
+
 # How to Run The Project
-Simply run this command:
+After installing the above pre-requisites, simply run this command:
 ```bash
 docker compose up
 ```
