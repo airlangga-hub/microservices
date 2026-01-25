@@ -33,6 +33,8 @@ Account, Catalog, and Order services each has 3 layers:
 # Topology
 Below is an overview of the whole program.
 
+![topology](./microservices.png)
+
 # Project Structure
 ```bash
 .
