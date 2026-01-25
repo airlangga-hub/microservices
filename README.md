@@ -6,7 +6,7 @@ This project simulates an e-commerce platform. It does the following:
     * Get All Products
     * Get Products By IDs
     * Get Product By ID
-    * Search Product
+    * Search Products By Query
 * BUYER ENDPOINTS
     * Account Create Order
     * Account Get Orders
