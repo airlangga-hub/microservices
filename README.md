@@ -15,6 +15,8 @@ This project simulates an e-commerce platform. It does the following:
 
 This project uses `Microservices + Pub/Sub architecture`, completely written in Go.
 
+`API Client` &rarr; I use [Bruno](https://www.usebruno.com/) for the API Client, the collection can be found in [this directory.](./microservices-api-client/)
+
 # Layers
 Account, Catalog, and Order services each has 3 layers:
 * Server &rarr; gRPC server layer
