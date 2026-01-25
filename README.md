@@ -35,6 +35,13 @@ Below is an overview of the whole program.
 
 ![topology](./microservices.png)
 
+# How to Run The Project
+Simply run this command:
+```bash
+docker compose up
+```
+then wait until all services are up.
+
 # Project Structure
 ```bash
 .
