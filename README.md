@@ -15,6 +15,12 @@ This project simulates an e-commerce platform. It does the following:
 
 This project uses `Microservices + Pub/Sub architecture`, completely written in Go.
 
+# Layers
+Account, Catalog, and Order services each has 3 layers:
+* Server &rarr; gRPC server layer
+* Service &rarr; business logic layer
+* Repository &rarr; database layer
+
 # Tech Stack
 * Go
 * gRPC
@@ -24,6 +30,91 @@ This project uses `Microservices + Pub/Sub architecture`, completely written in 
 
 # Topology
 Below is an overview of the whole program.
+
+# Project Structure
+```bash
+.
+├── account
+│   ├── account.proto
+│   ├── Dockerfile
+│   ├── dto.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── jwt.go
+│   ├── main.go
+│   ├── pb
+│   │   ├── account_grpc.pb.go
+│   │   └── account.pb.go
+│   ├── repository.go               // database layer
+│   ├── server.go                   // gRPC server layer
+│   ├── service.go                  // business logic layer
+│   └── up.sql
+├── catalog
+│   ├── catalog.proto
+│   ├── Dockerfile
+│   ├── go.mod
+│   ├── go.sum
+│   ├── main.go
+│   ├── pb
+│   │   ├── catalog_grpc.pb.go
+│   │   └── catalog.pb.go
+│   ├── repository.go               // database layer
+│   ├── server.go                   // gRPC server layer
+│   └── service.go                  // business logic layer
+├── docker-compose.yaml
+├── email
+│   ├── Dockerfile
+│   ├── dto.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── main.go
+│   └── send_email.go
+├── gateway
+│   ├── account_handler.go
+│   ├── account_pb                  // to init account service client
+│   │   ├── account_grpc.pb.go
+│   │   └── account.pb.go
+│   ├── catalog_handler.go
+│   ├── catalog_pb                  // to init catalog service client
+│   │   ├── catalog_grpc.pb.go
+│   │   └── catalog.pb.go
+│   ├── Dockerfile
+│   ├── dto.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── json.go
+│   ├── jwt.go
+│   ├── main.go
+│   ├── middleware.go
+│   ├── order_handler.go
+│   └── order_pb                    // to init order service client
+│       ├── order_grpc.pb.go
+│       └── order.pb.go
+├── Makefile
+├── microservices-api-client        // Bruno API Client collection  
+├── order
+│   ├── account_pb                  // to init account service client
+│   │   ├── account_grpc.pb.go
+│   │   └── account.pb.go
+│   ├── catalog_pb                  // to init catalog service client
+│   │   ├── catalog_grpc.pb.go
+│   │   └── catalog.pb.go
+│   ├── Dockerfile
+│   ├── dto.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── main.go
+│   ├── order.proto
+│   ├── pb
+│   │   ├── order_grpc.pb.go
+│   │   └── order.pb.go
+│   ├── publisher.go                // publish to RabbitMQ
+│   ├── repository.go               // database layer
+│   ├── server.go                   // gRPC server layer
+│   ├── service.go                  // business logic layer
+│   └── up.sql
+└── README.md
+```
 
 # API Endpoints
 Below is documentation for the API Endpoints.
